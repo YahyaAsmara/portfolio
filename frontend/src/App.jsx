@@ -166,9 +166,9 @@ const Portfolio = () => {
             </div>
             <div className="flex justify-center">
               <ModelViewer
-                url="frontend/src/assets/space_boi.glb"
-                width={350}
-                height={350}
+                url="assets/shiba.glb"
+                width={400}
+                height={400}
                 autoRotate={true}
                 environmentPreset="sunset"
                 showScreenshotButton={false}
