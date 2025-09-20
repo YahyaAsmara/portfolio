@@ -128,7 +128,7 @@ const Portfolio = () => {
             Yahya Asmara
           </h1>
           <p className="text-xl md:text-2xl font-extralight text-gray-300 mb-8">
-            Creative Developer
+            Computer Science @ University of Calgary
           </p>
           <div className="flex gap-4 justify-center">
             <a 
@@ -156,7 +156,7 @@ const Portfolio = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <p className="text-lg font-extralight text-gray-300 leading-relaxed mb-6">
-                I'm a developer passionate about creating digital experiences that blend functionality with aesthetic appeal. 
+                I'm a full stack developer passionate about creating digital experiences that blend functionality with aesthetic appeal. 
                 My work focuses on clean, minimal design paired with robust technical implementation.
               </p>
               <p className="text-lg font-extralight text-gray-300 leading-relaxed">
@@ -166,7 +166,7 @@ const Portfolio = () => {
             </div>
             <div className="flex justify-center">
               <ModelViewer
-                url="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/ToyCar/glTF-Binary/ToyCar.glb"
+                url="frontend/src/assets/space_boi.glb"
                 width={350}
                 height={350}
                 autoRotate={true}
