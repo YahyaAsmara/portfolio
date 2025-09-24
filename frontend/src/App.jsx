@@ -12,6 +12,7 @@ function Scene3D({ isHome }) {
   const mountRef = useRef(null);
   const controlsRef = useRef({ enabled: false });
   const [overlayVisible, setOverlayVisible] = useState(true);
+  const [showBadge, setShowBadge] = useState(true);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -156,7 +157,7 @@ function Scene3D({ isHome }) {
       setOverlayVisible(!enabled);
     }
 
-    mount.addEventListener('click', onClick);
+  mount.addEventListener('click', onClick);
     document.addEventListener('pointerlockchange', onPointerLockChange);
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('keydown', onKeyDown);
@@ -226,9 +227,18 @@ function Scene3D({ isHome }) {
     }
     window.addEventListener('resize', handleResize);
 
+    // scroll-based badge visibility: only show when on home and within hero viewport
+    function handleScrollBadge() {
+      const visible = isHome && overlayVisible && window.scrollY < (window.innerHeight * 0.6);
+      setShowBadge(visible);
+    }
+    handleScrollBadge();
+    window.addEventListener('scroll', handleScrollBadge, { passive: true });
+
     // Cleanup
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScrollBadge);
       document.removeEventListener('pointerlockchange', onPointerLockChange);
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('keydown', onKeyDown);
@@ -267,14 +277,20 @@ function Scene3D({ isHome }) {
         </>
       )}
 
-      {/* Explicit small enter-explore button for discoverability */}
-      <button
-        onClick={() => { if (isHome) mountRef.current?.requestPointerLock(); }}
-        className="fixed bottom-4 right-4 z-20 px-3 py-2 text-white rounded-md hover:bg-white/20 bg-white/5 backdrop-blur-sm border border-white/10 shadow-sm"
-        aria-label="Enter explore mode"
-      >
-        enter explore mode
-      </button>
+      {/* Floating glassy badge: appears only in hero area */}
+      {showBadge && isHome && (
+        <div
+          onClick={() => { if (isHome) mountRef.current?.requestPointerLock(); }}
+          className="fixed bottom-6 right-6 z-30 px-3 py-2 text-sm text-white rounded-full bg-white/6 backdrop-blur-md border border-white/10 shadow-lg cursor-pointer flex items-center gap-2"
+          role="button"
+          aria-label="Enter explore mode"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-90">
+            <path d="M12 2L15 11H9L12 2Z" fill="currentColor" />
+          </svg>
+          <span className="select-none">explorer</span>
+        </div>
+      )}
     </div>
   );
 }
