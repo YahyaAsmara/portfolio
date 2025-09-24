@@ -277,19 +277,20 @@ function Scene3D({ isHome }) {
         </>
       )}
 
-      {/* Floating glassy badge: appears only in hero area */}
+      {/* Explorer button: appears only in hero area */}
       {showBadge && isHome && (
-        <div
+        <button
           onClick={() => { if (isHome) mountRef.current?.requestPointerLock(); }}
-          className="fixed bottom-6 right-6 z-30 px-3 py-2 text-sm text-white rounded-full bg-white/6 backdrop-blur-md border border-white/10 shadow-lg cursor-pointer flex items-center gap-2"
-          role="button"
-          aria-label="Enter explore mode"
+          className="fixed bottom-6 right-6 z-30 px-4 py-3 text-sm text-white rounded-lg bg-white/10 backdrop-blur-md border border-white/20 shadow-xl hover:bg-white/15 hover:border-white/30 transition-all duration-300 flex items-center gap-2 font-medium"
+          aria-label={overlayVisible ? "Exit explore mode" : "Enter explore mode"}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-90">
             <path d="M12 2L15 11H9L12 2Z" fill="currentColor" />
           </svg>
-          <span className="select-none">explorer</span>
-        </div>
+          <span className="select-none lowercase">
+            {overlayVisible ? "press esc to exit explorer mode" : "explorer"}
+          </span>
+        </button>
       )}
     </div>
   );
@@ -345,11 +346,31 @@ const Portfolio = () => {
   ];
 
   const workingOn = [
-    { name: 'high-fidelity-agriculture-simulation', link: 'https://github.com/YahyaAsmara/high-fidelity-agriculture-simulation' },
-    { name: 'energy-simulation', link: 'https://github.com/YahyaAsmara/energy-simulation' },
-    { name: 'mining-platform', link: 'https://github.com/YahyaAsmara/mining-platform' },
-    { name: 'calgary-crime-analysis', link: 'https://github.com/YahyaAsmara/calgary-crime-analysis' },
-    { name: 'staircases', link: 'https://github.com/YahyaAsmara/Staircases' }
+    { 
+      name: 'high-fidelity-agriculture-simulation', 
+      description: 'farm',
+      link: 'https://github.com/YahyaAsmara/high-fidelity-agriculture-simulation' 
+    },
+    { 
+      name: 'energy-simulation', 
+      description: 'raspberry pi energy',
+      link: 'https://github.com/YahyaAsmara/energy-simulation' 
+    },
+    { 
+      name: 'mining-platform', 
+      description: 'real mining',
+      link: 'https://github.com/YahyaAsmara/mining-platform' 
+    },
+    { 
+      name: 'calgary-crime-analysis', 
+      description: 'data w/ sql',
+      link: 'https://github.com/YahyaAsmara/calgary-crime-analysis' 
+    },
+    { 
+      name: 'staircases', 
+      description: 'c sharp game',
+      link: 'https://github.com/YahyaAsmara/Staircases' 
+    }
   ];
 
   const sections = ['home', 'about', 'projects', 'contact'];
@@ -363,7 +384,27 @@ const Portfolio = () => {
   }
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen font-nunito overflow-x-hidden lowercase">
+    <div className="bg-gray-900 text-white min-h-screen font-nunito overflow-x-hidden lowercase" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <style jsx>{`
+        div::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+      
+      {/* Decorative Glass Scrollbar */}
+      <div className="fixed right-2 top-20 bottom-20 w-1 z-50">
+        <div className="relative h-full">
+          <div className="absolute inset-0 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full"></div>
+          <div 
+            className="absolute top-0 w-full bg-white/20 backdrop-blur-md border border-white/20 rounded-full transition-all duration-300"
+            style={{
+              height: `${Math.min(100, (window.innerHeight / document.body.scrollHeight) * 100)}%`,
+              transform: `translateY(${(window.scrollY / (document.body.scrollHeight - window.innerHeight)) * (100 - Math.min(100, (window.innerHeight / document.body.scrollHeight) * 100))}%)`
+            }}
+          ></div>
+        </div>
+      </div>
+
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 p-6 bg-gray-900/80 backdrop-blur-sm">
         <div className="flex justify-between items-center max-w-7xl mx-auto">
@@ -475,10 +516,21 @@ const Portfolio = () => {
             ))}
           </div>
           <h3 className="text-2xl font-extralight mt-12 mb-6">Working On</h3>
-          <div className="flex flex-wrap gap-3">
-            {workingOn.map(w => (
-              <a key={w.name} href={w.link} target="_blank" rel="noopener noreferrer" className="text-sm px-3 py-2 bg-gray-800/50 hover:bg-gray-800/70 rounded-md border border-white/10">
-                {w.name}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {workingOn.map(project => (
+              <a
+                key={project.name}
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-black/20 backdrop-blur-md border border-white/10 rounded-lg p-4 hover:bg-white/5 transition-all duration-300"
+              >
+                <h4 className="text-sm font-medium text-white truncate lowercase mb-2">
+                  {project.name}
+                </h4>
+                <p className="text-xs text-white/70 lowercase leading-relaxed">
+                  {project.description}
+                </p>
               </a>
             ))}
           </div>
