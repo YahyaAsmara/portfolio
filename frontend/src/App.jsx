@@ -288,7 +288,7 @@ function Scene3D({ isHome }) {
             <path d="M12 2L15 11H9L12 2Z" fill="currentColor" />
           </svg>
           <span className="select-none lowercase">
-            {overlayVisible ? "press esc to exit explorer mode" : "explorer"}
+            {overlayVisible ? "explorer" : "press esc to exit explorer mode"}
           </span>
         </button>
       )}
@@ -384,26 +384,7 @@ const Portfolio = () => {
   }
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen font-nunito overflow-x-hidden lowercase" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-      <style jsx>{`
-        div::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
-      
-      {/* Decorative Glass Scrollbar */}
-      <div className="fixed right-2 top-20 bottom-20 w-1 z-50">
-        <div className="relative h-full">
-          <div className="absolute inset-0 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full"></div>
-          <div 
-            className="absolute top-0 w-full bg-white/20 backdrop-blur-md border border-white/20 rounded-full transition-all duration-300"
-            style={{
-              height: `${Math.min(100, (window.innerHeight / document.body.scrollHeight) * 100)}%`,
-              transform: `translateY(${(window.scrollY / (document.body.scrollHeight - window.innerHeight)) * (100 - Math.min(100, (window.innerHeight / document.body.scrollHeight) * 100))}%)`
-            }}
-          ></div>
-        </div>
-      </div>
+    <div className="bg-gray-900 text-white min-h-screen font-nunito overflow-x-hidden lowercase">
 
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 p-6 bg-gray-900/80 backdrop-blur-sm">
@@ -471,14 +452,16 @@ const Portfolio = () => {
                 Currently exploring embedded technologies and three.js library.
               </p>
             </div>
-            <div className="flex justify-center">
+            <div className="flex justify-center md:justify-end">
               <ModelViewer
                 url="assets/shiba.glb"
-                width={500}
-                height={500}
+                width={400}
+                height={400}
                 autoRotate={true}
                 environmentPreset="sunset"
                 showScreenshotButton={false}
+                modelYOffset={0.1}
+                defaultRotationY={-20}
               />
             </div>
           </div>
