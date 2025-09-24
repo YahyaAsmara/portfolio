@@ -464,19 +464,18 @@ const Portfolio = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <p className="text-lg font-extralight text-gray-300 leading-relaxed mb-6">
-                I'm a full stack developer passionate about creating digital experiences that blend functionality with aesthetic appeal. 
+                I'm a full stack developer passionate about developing apps that blend functionality with 3D aesthetic appeal. 
                 My work focuses on clean, minimal design paired with robust technical implementation.
               </p>
               <p className="text-lg font-extralight text-gray-300 leading-relaxed">
-                Currently exploring the intersection of web technologies and 3D graphics to create immersive, 
-                interactive experiences.
+                Currently exploring embedded technologies and three.js library.
               </p>
             </div>
             <div className="flex justify-center">
               <ModelViewer
                 url="assets/shiba.glb"
-                width={400}
-                height={400}
+                width={500}
+                height={500}
                 autoRotate={true}
                 environmentPreset="sunset"
                 showScreenshotButton={false}
