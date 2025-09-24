@@ -269,8 +269,9 @@ function Scene3D({ isHome }) {
       {/* React-controlled overlay hint */}
       {overlayVisible && (
         <>
-          <div className="absolute left-1/2 top-4 transform -translate-x-1/2 text-white px-3 py-2 rounded-md text-sm z-20 backdrop-blur-md bg-white/5 border border-white/10">
-            click to explore — wasd to move · space/shift vertical · esc to exit
+          <div className="absolute left-1/2 top-4 transform -translate-x-1/2 text-white px-3 py-2 rounded-md text-xs md:text-sm z-20 backdrop-blur-md bg-white/5 border border-white/10 max-w-xs md:max-w-none text-center">
+            <span className="hidden md:inline">click to explore — wasd to move · space/shift vertical · esc to exit</span>
+            <span className="md:hidden">tap to explore · esc to exit</span>
           </div>
 
           {/* centered CTA removed per user request */}
@@ -281,13 +282,13 @@ function Scene3D({ isHome }) {
       {showBadge && isHome && (
         <button
           onClick={() => { if (isHome) mountRef.current?.requestPointerLock(); }}
-          className="fixed bottom-6 right-6 z-30 px-4 py-3 text-sm text-white rounded-lg bg-white/10 backdrop-blur-md border border-white/20 shadow-xl hover:bg-white/15 hover:border-white/30 transition-all duration-300 flex items-center gap-2 font-medium"
+          className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-30 px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm text-white rounded-lg bg-white/10 backdrop-blur-md border border-white/20 shadow-xl hover:bg-white/15 hover:border-white/30 transition-all duration-300 flex items-center gap-2 font-medium"
           aria-label={overlayVisible ? "Exit explore mode" : "Enter explore mode"}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-90">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-90">
             <path d="M12 2L15 11H9L12 2Z" fill="currentColor" />
           </svg>
-          <span className="select-none lowercase">
+          <span className="select-none lowercase hidden sm:inline">
             {overlayVisible ? "explorer" : "press esc to exit explorer mode"}
           </span>
         </button>
@@ -375,6 +376,35 @@ const Portfolio = () => {
 
   const sections = ['home', 'about', 'projects', 'contact'];
 
+  const scrollToSection = (sectionIndex) => {
+    const sectionId = sections[sectionIndex];
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      setCurrentSection(sectionIndex);
+    }
+  };
+
+  // Update current section based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      const sectionElements = sections.map(id => document.getElementById(id));
+      const scrollPosition = window.scrollY + window.innerHeight / 2;
+
+      for (let i = sectionElements.length - 1; i >= 0; i--) {
+        const element = sectionElements[i];
+        if (element && element.offsetTop <= scrollPosition) {
+          setCurrentSection(i);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check initial position
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-gray-900 flex items-center justify-center">
@@ -387,15 +417,15 @@ const Portfolio = () => {
     <div className="bg-gray-900 text-white min-h-screen font-nunito overflow-x-hidden lowercase">
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 p-6 bg-gray-900/80 backdrop-blur-sm">
+      <nav className="fixed top-0 left-0 right-0 z-50 p-4 md:p-6 bg-gray-900/80 backdrop-blur-sm">
         <div className="flex justify-between items-center max-w-7xl mx-auto">
-          <div className="text-2xl font-extralight">YA</div>
-          <div className="flex gap-8">
+          <div className="text-xl md:text-2xl font-extralight">YA</div>
+          <div className="flex gap-4 md:gap-8">
             {sections.map((section, index) => (
               <button
                 key={section}
-                onClick={() => setCurrentSection(index)}
-                className={`text-sm font-extralight transition-colors ${
+                onClick={() => scrollToSection(index)}
+                className={`text-xs md:text-sm font-extralight transition-colors ${
                   currentSection === index ? 'text-white' : 'text-gray-400 hover:text-white'
                 }`}
               >
@@ -407,30 +437,30 @@ const Portfolio = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center">
+      <section id="home" className="relative h-screen flex items-center justify-center">
         <div className="absolute inset-0 z-0">
           <Scene3D isHome={currentSection === 0} />
         </div>
         
-        <div className="relative z-10 text-center">
-          <h1 className="text-6xl md:text-8xl font-extralight mb-4 lowercase">
+        <div className="relative z-10 text-center px-4">
+          <h1 className="text-4xl sm:text-6xl md:text-8xl font-extralight mb-4 lowercase">
             Yahya Asmara
           </h1>
-          <p className="text-xl md:text-2xl font-extralight text-gray-300 mb-8 lowercase">
+          <p className="text-lg sm:text-xl md:text-2xl font-extralight text-gray-300 mb-8 lowercase px-2">
             Computer Science @ University of Calgary
           </p>
-          <div className="flex gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a 
               href="https://github.com/YahyaAsmara" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="px-6 py-3 border border-white/20 hover:border-white/40 transition-colors font-extralight"
+              className="px-6 py-3 border border-white/20 hover:border-white/40 transition-colors font-extralight w-full sm:w-auto text-center"
             >
               gitHub
             </a>
             <button 
-              onClick={() => setCurrentSection(3)}
-              className="px-6 py-3 bg-white text-gray-900 hover:bg-gray-100 transition-colors font-extralight"
+              onClick={() => scrollToSection(3)}
+              className="px-6 py-3 bg-white text-gray-900 hover:bg-gray-100 transition-colors font-extralight w-full sm:w-auto"
             >
               contact
             </button>
@@ -439,49 +469,51 @@ const Portfolio = () => {
       </section>
 
       {/* About Section */}
-      <section className="py-20 px-6">
+      <section id="about" className="py-12 md:py-20 px-4 md:px-6">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-extralight mb-12 text-center">About</h2>
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <p className="text-lg font-extralight text-gray-300 leading-relaxed mb-6">
+          <h2 className="text-3xl md:text-4xl font-extralight mb-8 md:mb-12 text-center">About</h2>
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+            <div className="order-2 md:order-1">
+              <p className="text-base md:text-lg font-extralight text-gray-300 leading-relaxed mb-4 md:mb-6">
                 I'm a full stack developer passionate about developing apps that blend functionality with 3D aesthetic appeal. 
                 My work focuses on clean, minimal design paired with robust technical implementation.
               </p>
-              <p className="text-lg font-extralight text-gray-300 leading-relaxed">
+              <p className="text-base md:text-lg font-extralight text-gray-300 leading-relaxed">
                 Currently exploring embedded technologies and three.js library.
               </p>
             </div>
-            <div className="flex justify-center md:justify-end">
-              <ModelViewer
-                url="assets/shiba.glb"
-                width={400}
-                height={400}
-                autoRotate={true}
-                environmentPreset="sunset"
-                showScreenshotButton={false}
-                modelYOffset={0.1}
-                defaultRotationY={-20}
-              />
+            <div className="flex justify-center md:justify-end order-1 md:order-2">
+              <div className="w-full max-w-xs md:max-w-md">
+                <ModelViewer
+                  url="assets/shiba.glb"
+                  width={250}
+                  height={250}
+                  autoRotate={true}
+                  environmentPreset="sunset"
+                  showScreenshotButton={false}
+                  modelYOffset={0.1}
+                  defaultRotationY={-20}
+                />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Projects Section */}
-      <section className="py-20 px-6 bg-gray-800/30">
+      <section id="projects" className="py-12 md:py-20 px-4 md:px-6 bg-gray-800/30">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-extralight mb-12 text-center">Projects</h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <h2 className="text-3xl md:text-4xl font-extralight mb-8 md:mb-12 text-center">Projects</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {projects.map((project, index) => (
-              <div key={project.name} className="bg-gray-800/50 p-6 hover:bg-gray-800/70 transition-colors">
-                <h3 className="text-xl font-extralight mb-3">{project.name}</h3>
+              <div key={project.name} className="bg-gray-800/50 p-4 md:p-6 hover:bg-gray-800/70 transition-colors rounded-lg">
+                <h3 className="text-lg md:text-xl font-extralight mb-3">{project.name}</h3>
                 <p className="text-gray-300 font-extralight mb-4 text-sm leading-relaxed">
                   {project.description}
                 </p>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {project.tech.map(tech => (
-                    <span key={tech} className="text-xs bg-gray-700 px-2 py-1 font-extralight">
+                    <span key={tech} className="text-xs bg-gray-700 px-2 py-1 font-extralight rounded">
                       {tech}
                     </span>
                   ))}
@@ -497,8 +529,8 @@ const Portfolio = () => {
               </div>
             ))}
           </div>
-          <h3 className="text-2xl font-extralight mt-12 mb-6">Working On</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <h3 className="text-xl md:text-2xl font-extralight mt-8 md:mt-12 mb-4 md:mb-6">Working On</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {workingOn.map(project => (
               <a
                 key={project.name}
@@ -520,13 +552,13 @@ const Portfolio = () => {
       </section>
 
       {/* Contact Section */}
-      <section className="py-20 px-6">
+      <section id="contact" className="py-12 md:py-20 px-4 md:px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-extralight mb-12">contact me</h2>
-          <div className="flex justify-center gap-8">
+          <h2 className="text-3xl md:text-4xl font-extralight mb-8 md:mb-12">contact me</h2>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8">
             <a 
               href="mailto:yahya16005@gmail.com" 
-              className="text-lg font-extralight border-b border-white/20 hover:border-white/40 transition-colors"
+              className="text-base md:text-lg font-extralight border-b border-white/20 hover:border-white/40 transition-colors"
             >
               Email
             </a>
@@ -534,7 +566,7 @@ const Portfolio = () => {
               href="https://github.com/YahyaAsmara" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-lg font-extralight border-b border-white/20 hover:border-white/40 transition-colors"
+              className="text-base md:text-lg font-extralight border-b border-white/20 hover:border-white/40 transition-colors"
             >
               GitHub
             </a>
@@ -542,7 +574,7 @@ const Portfolio = () => {
               href="https://linkedin.com/in/yahya-asmara" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-lg font-extralight border-b border-white/20 hover:border-white/40 transition-colors"
+              className="text-base md:text-lg font-extralight border-b border-white/20 hover:border-white/40 transition-colors"
             >
               LinkedIn
             </a>
