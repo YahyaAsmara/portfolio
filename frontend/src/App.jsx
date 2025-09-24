@@ -1,56 +1,283 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Text, Box, Sphere, Plane } from '@react-three/drei';
+// using raw three.js in Scene3D, remove react-three-fiber/drei imports
 import * as THREE from 'three';
 import ModelViewer from './components/ModelViewer';
 
-// 3D Scene Components
-const FloatingCube = ({ position, color = '#4F46E5' }) => {
-  const meshRef = useRef();
-  
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.x = Math.sin(state.clock.elapsedTime) * 0.3;
-      meshRef.current.rotation.y = state.clock.elapsedTime * 0.5;
-      meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 2) * 0.1;
+// Scene3D is implemented with plain three.js below
+
+
+
+
+function Scene3D({ isHome }) {
+  const mountRef = useRef(null);
+  const controlsRef = useRef({ enabled: false });
+  const [overlayVisible, setOverlayVisible] = useState(true);
+
+  useEffect(() => {
+    const mount = mountRef.current;
+    if (!mount) return;
+
+    const scene = new THREE.Scene();
+
+    // Guard against zero sizes (server-side render or hidden containers)
+    const mountWidth = mount.clientWidth || window.innerWidth || 800;
+    const mountHeight = mount.clientHeight || window.innerHeight || 600;
+    const camera = new THREE.PerspectiveCamera(75, mountWidth / mountHeight, 0.1, 2000);
+    camera.position.set(0, 0, 20);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    // Ensure renderer canvas fills the mount element
+    renderer.setSize(mountWidth, mountHeight);
+    renderer.setPixelRatio(window.devicePixelRatio || 1);
+    renderer.domElement.style.width = '100%';
+    renderer.domElement.style.height = '100%';
+    renderer.domElement.style.display = 'block';
+    // Ensure the mount has relative positioning and 100% size so absolute inset works
+    if (!mount.style.position) mount.style.position = 'relative';
+    if (!mount.style.width) mount.style.width = '100%';
+    if (!mount.style.height) mount.style.height = '100%';
+    mount.appendChild(renderer.domElement);
+
+    // overlay UI is React-controlled (see JSX) — no DOM overlay appended here
+
+    // Lighting
+    scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+
+    // Stars
+    const starVertices = [];
+    for (let i = 0; i < 5000; i++) {
+      const x = (Math.random() - 0.5) * 2000;
+      const y = (Math.random() - 0.5) * 2000;
+      const z = (Math.random() - 0.5) * 2000;
+      starVertices.push(x, y, z);
     }
-  });
+    const starGeometry = new THREE.BufferGeometry();
+    starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+    const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.7 });
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    scene.add(stars);
+
+    // --- Sun ---
+    const sunGeometry = new THREE.SphereGeometry(20, 32, 32);
+    const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffdd66 });
+    const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+    sun.position.set(-120, 40, -300);
+    scene.add(sun);
+    const sunLight = new THREE.PointLight(0xffddaa, 1.4, 1000);
+    sunLight.position.copy(sun.position);
+    scene.add(sunLight);
+
+    // --- Planets ---
+    const planets = [];
+    const disposables = [];
+    const planetSpecs = [
+      { r: 10, orbitRadius: 80, zOffset: -250, color: 0x6699ff, speed: 0.6 },
+      { r: 14, orbitRadius: 140, zOffset: -300, color: 0x88cc88, speed: 0.35 },
+      { r: 6, orbitRadius: 40, zOffset: -200, color: 0xcc8866, speed: 1.0 }
+    ];
+    planetSpecs.forEach(spec => {
+      const g = new THREE.SphereGeometry(spec.r, 24, 24);
+      const m = new THREE.MeshStandardMaterial({ color: spec.color, roughness: 0.7 });
+      const mesh = new THREE.Mesh(g, m);
+      mesh.position.set(spec.orbitRadius, 0, spec.zOffset);
+      mesh.userData = { angle: Math.random() * Math.PI * 2, speed: spec.speed, orbitRadius: spec.orbitRadius, zOffset: spec.zOffset };
+      scene.add(mesh);
+      planets.push(mesh);
+      disposables.push(g, m);
+    });
+
+    // --- Simple spaceship ---
+    const ship = new THREE.Group();
+    const noseGeo = new THREE.ConeGeometry(3, 8, 12);
+    const noseMat = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.6, roughness: 0.2 });
+    const nose = new THREE.Mesh(noseGeo, noseMat);
+    nose.rotation.x = Math.PI / 2;
+    ship.add(nose);
+    const finGeo = new THREE.BoxGeometry(1, 2, 4);
+    const finMat = new THREE.MeshStandardMaterial({ color: 0x333366 });
+    const fin = new THREE.Mesh(finGeo, finMat);
+    fin.position.set(0, -1.5, -2);
+    ship.add(fin);
+    ship.position.set(40, 0, -160);
+    scene.add(ship);
+    disposables.push(noseGeo, noseMat, finGeo, finMat);
+
+    // Movement state
+    let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false, moveUp = false, moveDown = false;
+    let velocity = new THREE.Vector3();
+    let direction = new THREE.Vector3();
+    let canMove = false;
+  let prevTime = performance.now();
+    let pitch = 0, yaw = 0;
+
+    // Mouse look
+    function onMouseMove(e) {
+      if (!controlsRef.current.enabled) return;
+      yaw -= e.movementX * 0.002;
+      pitch -= e.movementY * 0.002;
+      pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
+      // Apply rotation via quaternion for more stable camera control
+      const quat = new THREE.Quaternion();
+      quat.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
+      camera.quaternion.copy(quat);
+    }
+
+    // Keyboard controls
+    function onKeyDown(e) {
+      if (!controlsRef.current.enabled) return;
+      switch (e.code) {
+        case 'KeyW': moveForward = true; break;
+        case 'KeyS': moveBackward = true; break;
+        case 'KeyA': moveLeft = true; break;
+        case 'KeyD': moveRight = true; break;
+        case 'Space': moveUp = true; break;
+        case 'ShiftLeft': moveDown = true; break;
+      }
+    }
+    function onKeyUp(e) {
+      if (!controlsRef.current.enabled) return;
+      switch (e.code) {
+        case 'KeyW': moveForward = false; break;
+        case 'KeyS': moveBackward = false; break;
+        case 'KeyA': moveLeft = false; break;
+        case 'KeyD': moveRight = false; break;
+        case 'Space': moveUp = false; break;
+        case 'ShiftLeft': moveDown = false; break;
+      }
+    }
+
+    // Click to enable controls is disabled — activation occurs via button only
+    function onClick() {
+      // intentionally empty
+    }
+    function onPointerLockChange() {
+      const enabled = document.pointerLockElement === mount;
+      controlsRef.current.enabled = enabled;
+      setOverlayVisible(!enabled);
+    }
+
+    mount.addEventListener('click', onClick);
+    document.addEventListener('pointerlockchange', onPointerLockChange);
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('keyup', onKeyUp);
+
+    // Animation loop
+    let rafId = null;
+    function animate() {
+      const time = performance.now();
+      const delta = (time - prevTime) / 1000;
+      prevTime = time;
+
+      velocity.x -= velocity.x * 10.0 * delta;
+      velocity.y -= velocity.y * 10.0 * delta;
+      velocity.z -= velocity.z * 10.0 * delta;
+
+      direction.z = Number(moveForward) - Number(moveBackward);
+      direction.x = Number(moveRight) - Number(moveLeft);
+      direction.y = Number(moveUp) - Number(moveDown);
+      direction.normalize();
+
+      if (controlsRef.current.enabled) {
+        if (moveForward || moveBackward) velocity.z -= direction.z * 50.0 * delta;
+        if (moveLeft || moveRight) velocity.x -= direction.x * 50.0 * delta;
+        if (moveUp || moveDown) velocity.y -= direction.y * 50.0 * delta;
+
+        // Move camera in local space
+        camera.translateX(velocity.x * delta);
+        camera.translateY(velocity.y * delta);
+        camera.translateZ(velocity.z * delta);
+      } else {
+        // when not in pointer-lock, keep a gentle orbit/look for nicer presentation
+        // but only adjust look when pointer-lock is not active
+        camera.lookAt(scene.position);
+      }
+
+      // animate planets if present
+      if (typeof planets !== 'undefined' && planets.length) {
+        planets.forEach(p => {
+          p.userData.angle += p.userData.speed * delta;
+          const a = p.userData.angle;
+          const r = p.userData.orbitRadius;
+          p.position.x = Math.cos(a) * r;
+          p.position.z = Math.sin(a) * r + p.userData.zOffset;
+        });
+      }
+
+      // animate ship if present
+      if (typeof ship !== 'undefined') {
+        ship.position.x = 40 + Math.sin(time * 0.0008) * 30;
+        ship.position.y = Math.sin(time * 0.0012) * 6;
+        ship.rotation.y += 0.6 * delta;
+      }
+
+      renderer.render(scene, camera);
+      rafId = requestAnimationFrame(animate);
+    }
+    rafId = requestAnimationFrame(animate);
+
+    // Resize handler
+    function handleResize() {
+      const w = mount.clientWidth || window.innerWidth || 800;
+      const h = mount.clientHeight || window.innerHeight || 600;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('pointerlockchange', onPointerLockChange);
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('keyup', onKeyUp);
+      mount.removeEventListener('click', onClick);
+      if (rafId) cancelAnimationFrame(rafId);
+      try {
+        if (renderer) {
+          renderer.forceContextLoss && renderer.forceContextLoss();
+          renderer.dispose && renderer.dispose();
+          if (renderer.domElement && renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);
+        }
+      } catch (e) {
+        // silent dispose errors
+      }
+    };
+  }, []);
 
   return (
-    <Box ref={meshRef} position={position} args={[1, 1, 1]} castShadow>
-      <meshStandardMaterial color={color} />
-    </Box>
-  );
-};
-
-const Scene3D = () => {
-  return (
-    <>
-      <ambientLight intensity={0.2} />
-      <directionalLight position={[10, 10, 5]} intensity={0.8} castShadow />
-      <FloatingCube position={[-4, 2, -2]} color="#4F46E5" />
-      <FloatingCube position={[4, 1, -3]} color="#06B6D4" />
-      <FloatingCube position={[0, -1, -4]} color="#10B981" />
-      
-      <Plane 
-        position={[0, -2, 0]} 
-        rotation={[-Math.PI / 2, 0, 0]} 
-        args={[20, 20]} 
-        receiveShadow
-      >
-        <meshStandardMaterial color="#111827" />
-      </Plane>
-      
-      <OrbitControls 
-        enablePan={false} 
-        enableZoom={false} 
-        enableRotate={true}
-        autoRotate={true}
-        autoRotateSpeed={0.5}
+    <div className="relative w-full h-full">
+      <div
+        ref={mountRef}
+        className="absolute inset-0 z-0 cursor-pointer"
+        title="Click to explore space"
+        style={{ outline: 'none' }}
       />
-    </>
+
+      {/* React-controlled overlay hint */}
+      {overlayVisible && (
+        <>
+          <div className="absolute left-1/2 top-4 transform -translate-x-1/2 text-white px-3 py-2 rounded-md text-sm z-20 backdrop-blur-md bg-white/5 border border-white/10">
+            click to explore — wasd to move · space/shift vertical · esc to exit
+          </div>
+
+          {/* centered CTA removed per user request */}
+        </>
+      )}
+
+      {/* Explicit small enter-explore button for discoverability */}
+      <button
+        onClick={() => { if (isHome) mountRef.current?.requestPointerLock(); }}
+        className="fixed bottom-4 right-4 z-20 px-3 py-2 text-white rounded-md hover:bg-white/20 bg-white/5 backdrop-blur-sm border border-white/10 shadow-sm"
+        aria-label="Enter explore mode"
+      >
+        enter explore mode
+      </button>
+    </div>
   );
-};
+}
 
 // Main Portfolio Component
 const Portfolio = () => {
@@ -64,37 +291,63 @@ const Portfolio = () => {
 
   const projects = [
     {
-      name: "Project Alpha",
-      description: "A minimal web application built with React and Node.js",
-      tech: ["React", "Node.js", "MongoDB"],
-      link: "https://github.com/YahyaAsmara"
+      name: "genz-translator",
+      description: "A translator targeting Gen Z vernacular and modern slang.",
+      tech: ["JavaScript", "NLP"],
+      link: "https://github.com/YahyaAsmara/genz-translator"
     },
     {
-      name: "Project Beta", 
-      description: "Mobile-first responsive design with modern UI patterns",
-      tech: ["Vue.js", "Tailwind", "Firebase"],
-      link: "https://github.com/YahyaAsmara"
+      name: "3js_minecraft",
+      description: "Minecraft-inspired 3D rendering demo built with Three.js.",
+      tech: ["Three.js", "WebGL"],
+      link: "https://github.com/YahyaAsmara/3js_minecraft"
     },
     {
-      name: "Project Gamma",
-      description: "Data visualization dashboard with real-time updates",
-      tech: ["D3.js", "Python", "PostgreSQL"],
-      link: "https://github.com/YahyaAsmara"
+      name: "LawHub",
+      description: "Legal research and document tooling platform.",
+      tech: ["React", "Python"],
+      link: "https://github.com/YahyaAsmara/LawHub"
+    },
+    {
+      name: "DICOM",
+      description: "Medical imaging tools around the DICOM format.",
+      tech: ["Python", "Medical Imaging"],
+      link: "https://github.com/YahyaAsmara/DICOM"
+    },
+    {
+      name: "hamlet",
+      description: "A project named Hamlet made in high school.",
+      tech: ["Node.js"],
+      link: "https://github.com/YahyaAsmara/hamlet"
+    },
+    {
+      name: "Hackountant",
+      description: "Account application for Calgary Hacks 2024.",
+      tech: ["JavaScript"],
+      link: "https://github.com/ShakH00/Hackountant"
     }
   ];
 
-  const sections = ['Home', 'About', 'Projects', 'Contact'];
+  const workingOn = [
+    { name: 'high-fidelity-agriculture-simulation', link: 'https://github.com/YahyaAsmara/high-fidelity-agriculture-simulation' },
+    { name: 'energy-simulation', link: 'https://github.com/YahyaAsmara/energy-simulation' },
+    { name: 'mining-platform', link: 'https://github.com/YahyaAsmara/mining-platform' },
+    { name: 'calgary-crime-analysis', link: 'https://github.com/YahyaAsmara/calgary-crime-analysis' },
+    { name: 'staircases', link: 'https://github.com/YahyaAsmara/Staircases' }
+  ];
+
+  const sections = ['home', 'about', 'projects', 'contact'];
 
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-gray-900 flex items-center justify-center">
-        <div className="text-white text-xl font-extralight">Loading...</div>
+        <div className="text-white text-xl font-extralight">...</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen font-nunito overflow-x-hidden">
+    <div className="bg-gray-900 text-white min-h-screen font-nunito overflow-x-hidden lowercase">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 p-6 bg-gray-900/80 backdrop-blur-sm">
         <div className="flex justify-between items-center max-w-7xl mx-auto">
@@ -118,16 +371,14 @@ const Portfolio = () => {
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center">
         <div className="absolute inset-0 z-0">
-          <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-            <Scene3D />
-          </Canvas>
+          <Scene3D isHome={currentSection === 0} />
         </div>
         
         <div className="relative z-10 text-center">
-          <h1 className="text-6xl md:text-8xl font-extralight mb-4">
+          <h1 className="text-6xl md:text-8xl font-extralight mb-4 lowercase">
             Yahya Asmara
           </h1>
-          <p className="text-xl md:text-2xl font-extralight text-gray-300 mb-8">
+          <p className="text-xl md:text-2xl font-extralight text-gray-300 mb-8 lowercase">
             Computer Science @ University of Calgary
           </p>
           <div className="flex gap-4 justify-center">
@@ -137,13 +388,13 @@ const Portfolio = () => {
               rel="noopener noreferrer"
               className="px-6 py-3 border border-white/20 hover:border-white/40 transition-colors font-extralight"
             >
-              GitHub
+              gitHub
             </a>
             <button 
               onClick={() => setCurrentSection(3)}
               className="px-6 py-3 bg-white text-gray-900 hover:bg-gray-100 transition-colors font-extralight"
             >
-              Contact
+              contact
             </button>
           </div>
         </div>
@@ -207,19 +458,24 @@ const Portfolio = () => {
               </div>
             ))}
           </div>
+          <h3 className="text-2xl font-extralight mt-12 mb-6">Working On</h3>
+          <div className="flex flex-wrap gap-3">
+            {workingOn.map(w => (
+              <a key={w.name} href={w.link} target="_blank" rel="noopener noreferrer" className="text-sm px-3 py-2 bg-gray-800/50 hover:bg-gray-800/70 rounded-md border border-white/10">
+                {w.name}
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Contact Section */}
       <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-extralight mb-12">Get in Touch</h2>
-          <p className="text-lg font-extralight text-gray-300 mb-8 leading-relaxed">
-            Interested in collaborating or have a project in mind? Let's create something amazing together.
-          </p>
+          <h2 className="text-4xl font-extralight mb-12">contact me</h2>
           <div className="flex justify-center gap-8">
             <a 
-              href="mailto:hello@example.com" 
+              href="mailto:yahya16005@gmail.com" 
               className="text-lg font-extralight border-b border-white/20 hover:border-white/40 transition-colors"
             >
               Email
