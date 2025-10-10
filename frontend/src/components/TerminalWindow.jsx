@@ -40,7 +40,8 @@ export default function TerminalWindow({ onCommand }) {
         '  home    — back to top',
         '  about   — who am i',
         '  experiences — brief roles',
-        '  projects— selected repos',
+  '  projects— selected repos',
+  '  game    — roguelite card game',
         '  contact — get in touch',
         '  theme <color> — switch accent color',
         '  clear   — clear terminal',
@@ -110,7 +111,7 @@ export default function TerminalWindow({ onCommand }) {
         </form>
 
   <div className="flex flex-wrap gap-2 px-5 md:px-7 py-4 text-[11px] md:text-xs border-t border-accent-20 text-terminal">
-          {['help', 'home', 'about', 'experiences', 'projects', 'contact', 'clear'].map(c => (
+          {['help', 'home', 'about', 'experiences', 'projects', 'game', 'contact', 'clear'].map(c => (
             <button
               key={c}
               onClick={() => run(c)}

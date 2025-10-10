@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import ThreeMinimal from './components/ThreeMinimal';
 import TerminalWindow from './components/TerminalWindow';
 import RollingGallery from './RollingGallery';
+const GameMegastructure = React.lazy(() => import('./components/GameMegastructure'));
+const GameTetris = React.lazy(() => import('./components/GameTetris'));
+const GameRoguelite = React.lazy(() => import('./components/GameRoguelite'));
 
 const Portfolio = () => {
   const [currentSection, setCurrentSection] = useState(0);
@@ -25,6 +28,7 @@ const Portfolio = () => {
     const entry = ACCENTS[useAccentKey] || ACCENTS.blue;
   setAccent(entry.hex);
   setAccentKey(key);
+    try { localStorage.setItem('accent-key', key); } catch {}
     const root = document.documentElement;
   root.setAttribute('data-theme', key);
     root.style.setProperty('--accent-hex', entry.hex);
@@ -51,7 +55,6 @@ const Portfolio = () => {
       root.style.setProperty('--terminal-fg', '#e8f5fc');
       root.style.setProperty('--card-bg', 'rgba(0,0,0,0.40)');
     }
-    try { localStorage.setItem('accent-key', key); } catch {}
   };
 
   useEffect(() => {
@@ -91,7 +94,7 @@ const Portfolio = () => {
     { name: 'staircases', description: 'c sharp game', link: 'https://github.com/YahyaAsmara/Staircases' },
   ];
 
-  const sections = ['home', 'about', 'experiences', 'projects', 'contact'];
+  const sections = ['home', 'about', 'experiences', 'projects', 'game', 'contact'];
   const scrollToSection = (i) => {
     const el = document.getElementById(sections[i]);
     if (el) {
@@ -128,13 +131,15 @@ const Portfolio = () => {
   if (c === '3') return scrollToSection(2);
   if (c === '4') return scrollToSection(3);
   if (c === '5') return scrollToSection(4);
+  if (c === '6') return scrollToSection(5);
 
     // Exact aliases
     const aliasMap = {
       home: ['home', 'top', 'start', 'root', 'index'],
       about: ['about', 'whoami', 'bio', 'me'],
   experiences: ['experiences', 'experience', 'xp', 'workexp'],
-  projects: ['projects', 'project', 'work', 'repo', 'repos', 'portfolio'],
+    projects: ['projects', 'project', 'work', 'repo', 'repos', 'portfolio'],
+      game: ['game', 'roguelite', 'cards'],
       contact: ['contact', 'reach', 'email', 'connect', 'get in touch'],
     };
     for (const [id, vals] of Object.entries(aliasMap)) {
@@ -258,7 +263,7 @@ interests = ['embedded', 'graphics', 'data']`}</pre>
         </div>
       </section>
 
-      {/* projects */}
+  {/* projects */}
       <section id="projects" className="py-20 md:py-36 px-5 md:px-8 bg-section border-y border-accent-20">
         <div className="max-w-6xl mx-auto">
           <h2 className={"text-base md:text-lg mb-10 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>projects</h2>
@@ -284,6 +289,32 @@ interests = ['embedded', 'graphics', 'data']`}</pre>
                 <p className="text-[11px] text-card opacity-70 leading-relaxed">{project.description}</p>
               </a>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* games */}
+      <section id="game" className="py-20 md:py-36 px-5 md:px-8">
+        <div className="max-w-5xl mx-auto">
+          <h2 className={"text-base md:text-lg mb-6 md:mb-8 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>games</h2>
+          <div className="grid grid-cols-1 gap-10">
+            {/* Tetris */}
+            <div className="text-[11px] text-site opacity-70">tetris · classic puzzle game</div>
+            <Suspense fallback={<div className="text-[11px] text-site opacity-70">loading tetris…</div>}>
+              <GameTetris themeKey={accentKey} accent={accent} />
+            </Suspense>
+
+            {/* Card Roguelite */}
+            <div className="text-[11px] text-site opacity-70">cards · quick score‑chase</div>
+            <Suspense fallback={<div className="text-[11px] text-site opacity-70">loading cards…</div>}>
+              <GameRoguelite themeKey={accentKey} accent={accent} />
+            </Suspense>
+
+            {/* Megastructure (text horror + 3D ambience) */}
+            <div className="text-[11px] text-site opacity-70">megastructure · text horror + foggy pillars</div>
+            <Suspense fallback={<div className="text-[11px] text-site opacity-70">loading megastructure…</div>}>
+              <GameMegastructure themeKey={accentKey} accent={accent} />
+            </Suspense>
           </div>
         </div>
       </section>
