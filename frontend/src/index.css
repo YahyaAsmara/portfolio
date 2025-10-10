@@ -45,6 +45,9 @@
   --site-fg: #ffe5d6;
   --terminal-bg: rgba(0, 0, 0, 0.70);
   --terminal-fg: #e8f5fc;
+  --card-bg: rgba(0,0,0,0.40);
+  --card-fg: var(--site-fg);
+  --section-bg: rgba(0,0,0,0.30);
 
     --background: 15 35% 6%;   /* warm black */
   --foreground: 204 60% 90%; /* blue-ish text */
@@ -117,14 +120,29 @@
   .shadow-accent { box-shadow: 0 0 40px var(--accent-25) !important; }
   .btn-accent { background-color: var(--accent-hex); color: var(--accent-contrast); }
   .btn-accent:hover { background-color: var(--accent-hover); }
-  .chip-accent { background-color: var(--accent-10); border-color: var(--accent-25); color: #cfe6f3; }
+  .chip-accent { background-color: var(--accent-10); border-color: var(--accent-25); color: var(--site-fg); }
   .chip-accent:hover { background-color: var(--accent-15); }
   /* Site/Terminal utilities */
   .bg-site { background-color: var(--site-bg) !important; }
   .text-site { color: var(--site-fg) !important; }
   .bg-terminal { background-color: var(--terminal-bg) !important; }
   .text-terminal { color: var(--terminal-fg) !important; }
+  .bg-card { background-color: var(--card-bg) !important; }
+  .text-card { color: var(--card-fg) !important; }
+  .bg-section { background-color: var(--section-bg) !important; }
 }
+[data-theme="white"] .bg-section { background-color: rgba(0,0,0,0.06) !important; }
+
+/* High contrast overrides for white theme */
+[data-theme="white"] .btn-accent { background-color: #000000 !important; color: #ffffff !important; }
+[data-theme="white"] .btn-accent:hover { background-color: #1f2937 !important; }
+[data-theme="black"] .btn-accent { background-color: #ffffff !important; color: #000000 !important; }
+[data-theme="black"] .btn-accent:hover { background-color: #e5e7eb !important; }
+[data-theme="white"] .term-btn { background-color: #000000 !important; color: #ffffff !important; border-color: rgba(0,0,0,0.8) !important; }
+[data-theme="white"] .chip-accent { background-color: rgba(255,255,255,0.10) !important; border-color: rgba(255,255,255,0.25) !important; color: #ffffff !important; }
+[data-theme="white"] .bg-card { background-color: #111111 !important; }
+[data-theme="white"] .text-card { color: #ffffff !important; }
+[data-theme="white"] .contact-link { color: #000000 !important; border-color: #000000 !important; font-weight: 500; }
 
 /* Improve anchor scroll positioning */
 section[id] { scroll-margin-top: 12vh; }

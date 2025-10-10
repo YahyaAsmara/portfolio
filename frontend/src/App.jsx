@@ -23,29 +23,33 @@ const Portfolio = () => {
     // Use a contrasting accent for black/white themes to preserve readability
     const useAccentKey = (key === 'white' || key === 'black') ? 'blue' : key;
     const entry = ACCENTS[useAccentKey] || ACCENTS.blue;
-    setAccent(entry.hex);
-    setAccentKey(key);
+  setAccent(entry.hex);
+  setAccentKey(key);
     const root = document.documentElement;
+  root.setAttribute('data-theme', key);
     root.style.setProperty('--accent-hex', entry.hex);
     root.style.setProperty('--accent-rgb', entry.rgb);
     root.style.setProperty('--accent-contrast', entry.contrast);
     // Adjust site/terminal colors for black/white themes
     if (key === 'black') {
-      root.style.setProperty('--site-bg', '#0b0b0b');
-      root.style.setProperty('--site-fg', '#e5e5e5');
+      root.style.setProperty('--site-bg', '#000000');
+      root.style.setProperty('--site-fg', '#ffffff');
       root.style.setProperty('--terminal-bg', 'rgba(0,0,0,0.78)');
-      root.style.setProperty('--terminal-fg', '#e5e7eb');
+      root.style.setProperty('--terminal-fg', '#ffffff');
+      root.style.setProperty('--card-bg', 'rgba(0,0,0,0.40)');
     } else if (key === 'white') {
       root.style.setProperty('--site-bg', '#f8fafc');
       root.style.setProperty('--site-fg', '#0b0f13');
       root.style.setProperty('--terminal-bg', 'rgba(255,255,255,0.80)');
       root.style.setProperty('--terminal-fg', '#0b0f13');
+      root.style.setProperty('--card-bg', '#111111');
     } else {
       // default scheme
       root.style.setProperty('--site-bg', '#0f0b0a');
       root.style.setProperty('--site-fg', '#ffe5d6');
       root.style.setProperty('--terminal-bg', 'rgba(0, 0, 0, 0.70)');
       root.style.setProperty('--terminal-fg', '#e8f5fc');
+      root.style.setProperty('--card-bg', 'rgba(0,0,0,0.40)');
     }
     try { localStorage.setItem('accent-key', key); } catch {}
   };
@@ -182,8 +186,8 @@ const Portfolio = () => {
         <ThreeMinimal accent={accent} />
         <div className="relative z-10 w-full px-5 pt-24 md:pt-32">
           <div className="text-center mb-10 md:mb-16">
-            <h1 className={"text-3xl sm:text-5xl md:text-6xl tracking-tight " + (accentKey === 'white' ? 'text-site' : 'text-accent-strong')}>yahya asmara</h1>
-            <p className={"text-xs sm:text-sm md:text-base mt-3 " + (accentKey === 'white' ? 'text-site opacity-80' : 'text-accent-strong opacity-80')}>cs @ university of calgary · full‑stack · three.js</p>
+            <h1 className={"text-3xl sm:text-5xl md:text-6xl tracking-tight " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>yahya asmara</h1>
+            <p className={"text-xs sm:text-sm md:text-base mt-3 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site opacity-80' : 'text-accent-strong opacity-80')}>cs @ university of calgary · full‑stack · three.js</p>
           </div>
           <div className="max-w-3xl mx-auto">
             <TerminalWindow onCommand={onTerminalCommand} />
@@ -205,10 +209,10 @@ const Portfolio = () => {
       {/* about */}
   <section id="about" className="pt-20 md:pt-28 pb-12 md:pb-16 px-5 md:px-8">
         <div className="max-w-5xl mx-auto">
-          <h2 className={"text-base md:text-lg mb-8 md:mb-12 " + (accentKey === 'white' ? 'text-site' : 'text-accent-strong')}>about</h2>
+          <h2 className={"text-base md:text-lg mb-8 md:mb-12 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>about</h2>
           <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-stretch">
             <div className="order-2 md:order-1">
-              <div className="bg-black/40 border border-accent-25 rounded p-5 md:p-7 leading-relaxed text-site">
+              <div className="bg-card border border-accent-25 rounded p-5 md:p-7 leading-relaxed text-card">
                 <pre className="whitespace-pre-wrap text-xs md:text-sm">{`// hello, i'm yahya
 // i build minimalist interfaces and playful 3d experiments.
 stack = ['react', 'three.js', 'python', 'java', 'c']
@@ -227,57 +231,57 @@ interests = ['embedded', 'graphics', 'data']`}</pre>
       {/* experiences */}
   <section id="experiences" className="pt-8 md:pt-12 pb-12 md:pb-16 px-5 md:px-8">
         <div className="max-w-6xl mx-auto">
-          <h2 className={"text-base md:text-lg mb-6 md:mb-8 " + (accentKey === 'white' ? 'text-site' : 'text-accent-strong')}>experiences</h2>
+          <h2 className={"text-base md:text-lg mb-6 md:mb-8 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>experiences</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-            <div className="bg-black/40 border border-accent-25 rounded p-4 md:p-5">
-              <h3 className="text-sm text-[#e8f5fc] mb-1">Experience Ventures × Building Bridges (TIES), University of Calgary</h3>
-              <p className="text-[11px] text-[#e8f5fc]/70 mb-2">Dec 2024 – Mar 2025</p>
-              <ul className="text-[11px] text-[#e8f5fc]/80 space-y-1 list-disc pl-4">
+            <div className="bg-card border border-accent-25 rounded p-4 md:p-5">
+              <h3 className="text-sm text-card mb-1">Experience Ventures × Building Bridges (TIES), University of Calgary</h3>
+              <p className="text-[11px] text-card opacity-70 mb-2">Dec 2024 – Mar 2025</p>
+              <ul className="text-[11px] text-card opacity-80 space-y-1 list-disc pl-4">
                 <li>Worked with 34+ businesses across B2B/B2C/SaaS/PaaS; sharpened venture strategy.</li>
                 <li>Built a searchable business directory to streamline stakeholder communication.</li>
                 <li>Collaborated with peers to deliver insights and expand partner networks.</li>
               </ul>
             </div>
-            <div className="bg-black/40 border border-accent-25 rounded p-4 md:p-5">
-              <h3 className="text-sm text-[#e8f5fc] mb-1">Academic Tutor, EducationWise Inc. — Calgary, AB</h3>
-              <p className="text-[11px] text-[#e8f5fc]/70 mb-2">May 2024 – Present</p>
-              <ul className="text-[11px] text-[#e8f5fc]/80 space-y-1 list-disc pl-4">
+            <div className="bg-card border border-accent-25 rounded p-4 md:p-5">
+              <h3 className="text-sm text-card mb-1">Academic Tutor, EducationWise Inc. — Calgary, AB</h3>
+              <p className="text-[11px] text-card opacity-70 mb-2">May 2024 – Present</p>
+              <ul className="text-[11px] text-card opacity-80 space-y-1 list-disc pl-4">
                 <li>Delivered CS instruction using evidence-based methods across multiple languages.</li>
                 <li>Designed study strategies leading to measurable gains in test scores and outcomes.</li>
               </ul>
             </div>
-            <div className="bg-black/40 border border-accent-25 rounded p-4 md:p-5">
-              <h3 className="text-sm text-[#e8f5fc] mb-1">ICT Internship Program, CAREERS</h3>
-              <p className="text-[11px] text-[#e8f5fc]/70">Jul 2022 – Aug 2022</p>
+            <div className="bg-card border border-accent-25 rounded p-4 md:p-5">
+              <h3 className="text-sm text-card mb-1">ICT Internship Program, CAREERS</h3>
+              <p className="text-[11px] text-card opacity-70">Jul 2022 – Aug 2022</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* projects */}
-      <section id="projects" className="py-20 md:py-36 px-5 md:px-8 bg-black/30 border-y border-accent-20">
+      <section id="projects" className="py-20 md:py-36 px-5 md:px-8 bg-section border-y border-accent-20">
         <div className="max-w-6xl mx-auto">
-          <h2 className={"text-base md:text-lg mb-10 " + (accentKey === 'white' ? 'text-site' : 'text-accent-strong')}>projects</h2>
+          <h2 className={"text-base md:text-lg mb-10 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>projects</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {projects.map((project) => (
-              <div key={project.name} className="bg-black/40 border border-accent-25 p-5 md:p-6 rounded hover:border-accent-40 transition-colors">
-                <h3 className="text-sm md:text-base text-[#ffe5d6] mb-2 tracking-wide">{project.name}</h3>
-                <p className="text-[#ffe5d6]/80 mb-3 text-xs leading-relaxed">{project.description}</p>
+              <div key={project.name} className="bg-card border border-accent-25 p-5 md:p-6 rounded hover:border-accent-40 transition-colors">
+                <h3 className="text-sm md:text-base text-card mb-2 tracking-wide">{project.name}</h3>
+                <p className="text-card opacity-80 mb-3 text-xs leading-relaxed">{project.description}</p>
                 <div className="flex flex-wrap gap-2 mb-3">
                   {project.tech.map((tech) => (
                     <span key={tech} className="text-[10px] chip-accent border px-2 py-0.5 rounded">{tech}</span>
                   ))}
                 </div>
-                <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-xs border-b border-accent-40 hover:border-accent-70 text-[#ffe5d6]">View Project →</a>
+                <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-xs border-b border-accent-40 hover:border-accent-70 text-card">View Project →</a>
               </div>
             ))}
           </div>
-          <h3 className={"text-sm md:text-base mt-10 md:mt-16 mb-4 md:mb-6 " + (accentKey === 'white' ? 'text-site' : 'text-accent-strong')}>working on</h3>
+          <h3 className={"text-sm md:text-base mt-10 md:mt-16 mb-4 md:mb-6 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>working on</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {workingOn.map((project) => (
-              <a key={project.name} href={project.link} target="_blank" rel="noopener noreferrer" className="bg-black/40 border border-accent-25 rounded p-4 hover:border-accent-40 transition-all duration-300">
-                <h4 className="text-xs text-[#ffe5d6] truncate mb-1">{project.name}</h4>
-                <p className="text-[11px] text-[#ffe5d6]/70 leading-relaxed">{project.description}</p>
+              <a key={project.name} href={project.link} target="_blank" rel="noopener noreferrer" className="bg-card border border-accent-25 rounded p-4 hover:border-accent-40 transition-all duration-300">
+                <h4 className="text-xs text-card truncate mb-1">{project.name}</h4>
+                <p className="text-[11px] text-card opacity-70 leading-relaxed">{project.description}</p>
               </a>
             ))}
           </div>
@@ -287,11 +291,11 @@ interests = ['embedded', 'graphics', 'data']`}</pre>
       {/* contact */}
       <section id="contact" className="py-20 md:py-36 px-5 md:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className={"text-base md:text-lg mb-8 " + (accentKey === 'white' ? 'text-site' : 'text-accent-strong')}>contact</h2>
+          <h2 className={"text-base md:text-lg mb-8 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>contact</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8">
-            <a href="mailto:yahya16005@gmail.com" className="text-xs md:text-sm border-b border-accent-40 hover:border-accent-70 text-[#ffe5d6]">Email</a>
-            <a href="https://github.com/YahyaAsmara" target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm border-b border-accent-40 hover:border-accent-70 text-[#ffe5d6]">GitHub</a>
-            <a href="https://linkedin.com/in/yahya-asmara" target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm border-b border-accent-40 hover:border-accent-70 text-[#ffe5d6]">LinkedIn</a>
+            <a href="mailto:yahya16005@gmail.com" className="text-xs md:text-sm border-b border-accent-40 hover:border-accent-70 text-site contact-link">Email</a>
+            <a href="https://github.com/YahyaAsmara" target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm border-b border-accent-40 hover:border-accent-70 text-site contact-link">GitHub</a>
+            <a href="https://linkedin.com/in/yahya-asmara" target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm border-b border-accent-40 hover:border-accent-70 text-site contact-link">LinkedIn</a>
           </div>
         </div>
       </section>
@@ -299,7 +303,7 @@ interests = ['embedded', 'graphics', 'data']`}</pre>
       {/* footer */}
       <footer className="py-12 md:py-16 px-6 border-t border-accent-20">
         <div className="max-w-7xl mx-auto text-center">
-          <p className="text-[11px] text-[#ffe5d6]/60">© 2025 yahya asmara — react • three.js</p>
+          <p className="text-[11px] text-site opacity-60">© 2025 yahya asmara — react • three.js</p>
         </div>
       </footer>
     </div>

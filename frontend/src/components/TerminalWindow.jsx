@@ -95,7 +95,7 @@ export default function TerminalWindow({ onCommand }) {
           onSubmit={(e) => { e.preventDefault(); run(input); }}
           className="flex items-center gap-2 px-5 md:px-7 py-4 border-t border-accent-20"
         >
-          <span className="text-accent font-mono text-xs md:text-sm select-none">{prompt}</span>
+          <span className="text-terminal font-mono text-xs md:text-sm select-none">{prompt}</span>
           <input
             ref={inputRef}
             value={input}
@@ -114,7 +114,7 @@ export default function TerminalWindow({ onCommand }) {
             <button
               key={c}
               onClick={() => run(c)}
-              className="px-2.5 py-1.5 rounded bg-accent-10 hover:bg-accent-15 text-[#cfe6f3] border border-accent-25"
+              className="px-2.5 py-1.5 rounded bg-accent-10 hover:bg-accent-15 text-terminal border border-accent-25 term-btn"
             >{c}</button>
           ))}
         </div>
