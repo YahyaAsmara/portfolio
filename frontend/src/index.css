@@ -26,6 +26,26 @@
     min-height: 100vh;
   }
   :root {
+    /* Dynamic accent variables (updated via JS) */
+    --accent-hex: #74b0d6; /* default blue */
+    --accent-rgb: 116, 176, 214; /* r,g,b */
+    --accent-contrast: #000000; /* text color on accent backgrounds */
+    /* Derived mixes for borders/backgrounds */
+    --accent-10: color-mix(in sRGB, rgb(var(--accent-rgb)) 10%, transparent);
+    --accent-15: color-mix(in sRGB, rgb(var(--accent-rgb)) 15%, transparent);
+    --accent-20: color-mix(in sRGB, rgb(var(--accent-rgb)) 20%, transparent);
+    --accent-25: color-mix(in sRGB, rgb(var(--accent-rgb)) 25%, transparent);
+    --accent-40: color-mix(in sRGB, rgb(var(--accent-rgb)) 40%, transparent);
+    --accent-70: color-mix(in sRGB, rgb(var(--accent-rgb)) 70%, transparent);
+    --accent-hover: color-mix(in sRGB, rgb(var(--accent-rgb)) 85%, white);
+    --accent-text-strong: color-mix(in sRGB, rgb(var(--accent-rgb)) 70%, white);
+
+  /* Site/terminal color variables (updated for black/white themes) */
+  --site-bg: #0f0b0a;
+  --site-fg: #ffe5d6;
+  --terminal-bg: rgba(0, 0, 0, 0.70);
+  --terminal-fg: #e8f5fc;
+
     --background: 15 35% 6%;   /* warm black */
   --foreground: 204 60% 90%; /* blue-ish text */
     --card: 15 35% 8%;
@@ -83,6 +103,27 @@
 @layer utilities {
   .font-nunito { font-family: 'Lexend Deca', sans-serif; }
   .font-mono { font-family: 'Lexend Deca', sans-serif; }
+  /* Accent utilities */
+  .text-accent { color: var(--accent-hex); }
+  .text-accent-strong { color: var(--accent-text-strong); }
+  .border-accent-20 { border-color: var(--accent-20) !important; }
+  .border-accent-25 { border-color: var(--accent-25) !important; }
+  .border-accent-40 { border-color: var(--accent-40) !important; }
+  .hover\:border-accent-40:hover { border-color: var(--accent-40) !important; }
+  .hover\:border-accent-70:hover { border-color: var(--accent-70) !important; }
+  .bg-accent { background-color: var(--accent-hex) !important; }
+  .bg-accent-10 { background-color: var(--accent-10) !important; }
+  .bg-accent-15 { background-color: var(--accent-15) !important; }
+  .shadow-accent { box-shadow: 0 0 40px var(--accent-25) !important; }
+  .btn-accent { background-color: var(--accent-hex); color: var(--accent-contrast); }
+  .btn-accent:hover { background-color: var(--accent-hover); }
+  .chip-accent { background-color: var(--accent-10); border-color: var(--accent-25); color: #cfe6f3; }
+  .chip-accent:hover { background-color: var(--accent-15); }
+  /* Site/Terminal utilities */
+  .bg-site { background-color: var(--site-bg) !important; }
+  .text-site { color: var(--site-fg) !important; }
+  .bg-terminal { background-color: var(--terminal-bg) !important; }
+  .text-terminal { color: var(--terminal-fg) !important; }
 }
 
 /* Improve anchor scroll positioning */
@@ -107,6 +148,8 @@ section[id] { scroll-margin-top: 12vh; }
   gap: 12px;
   padding: 8px 12px;
   animation: rg-scroll var(--rg-duration, 40s) linear infinite;
+  /* Allow vertical page scroll while enabling horizontal drag in gallery */
+  touch-action: pan-y;
 }
 .rg-track.rg-anim { animation-play-state: running; }
 .rg-wrap.rg-hover-pause:hover .rg-track { animation-play-state: paused; }

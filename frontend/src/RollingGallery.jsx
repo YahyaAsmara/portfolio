@@ -35,11 +35,11 @@ export default function RollingGallery({ autoplay = false, pauseOnHover = true, 
   const controls = useAnimation();
   const autoRef = useRef(null);
 
-  const cylinderWidth = isSm ? 900 : 1400;
+  const cylinderWidth = isSm ? 720 : 1400;
   const faceCount = imgs.length;
-  const faceWidth = (cylinderWidth / faceCount) * 1.6;
-  const dragFactor = 0.05;
-  const radius = (cylinderWidth / (2 * Math.PI)) * 0.8;
+  const faceWidth = (cylinderWidth / faceCount) * (isSm ? 1.75 : 1.6);
+  const dragFactor = isSm ? 0.035 : 0.05; // slightly less sensitive on mobile
+  const radius = (cylinderWidth / (2 * Math.PI)) * (isSm ? 0.72 : 0.8);
 
   useEffect(() => {
     const onResize = () => setIsSm(window.innerWidth <= 640);
@@ -60,7 +60,7 @@ export default function RollingGallery({ autoplay = false, pauseOnHover = true, 
   const onWheel = (e) => {
     const deltaRaw = e.deltaY || e.deltaX || 0;
     const delta = Math.max(-80, Math.min(80, deltaRaw));
-    const next = rotation.get() + delta * 0.02;
+    const next = rotation.get() + delta * (isSm ? 0.03 : 0.02);
     const faceAngle = 360 / faceCount;
     const snapped = Math.round(next / faceAngle) * faceAngle;
     rotation.set(snapped);
@@ -101,7 +101,7 @@ export default function RollingGallery({ autoplay = false, pauseOnHover = true, 
   }, [rotation]);
 
   return (
-    <div className="gallery-container" onWheel={onWheel}>
+  <div className="gallery-container" onWheel={onWheel}>
       <div className="gallery-gradient gallery-gradient-left"></div>
       <div className="gallery-gradient gallery-gradient-right"></div>
       <div className="gallery-content">
