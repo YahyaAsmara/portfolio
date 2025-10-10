@@ -13,7 +13,7 @@ const Portfolio = () => {
   const [accentKey, setAccentKey] = useState('blue');
 
   const ACCENTS = {
-    red: { hex: '#ef4444', rgb: '239,68,68', contrast: '#ffffff' },
+    red: { hex: '#fe7373ff', rgb: '239,68,68', contrast: '#ffffff' },
     blue: { hex: '#74b0d6', rgb: '116,176,214', contrast: '#000000' },
     green: { hex: '#34d399', rgb: '52,211,153', contrast: '#000000' },
     yellow: { hex: '#f59e0b', rgb: '245,158,11', contrast: '#000000' },
@@ -23,8 +23,8 @@ const Portfolio = () => {
   };
 
   const applyAccent = (key) => {
-    // Use a contrasting accent for black/white themes to preserve readability
-    const useAccentKey = (key === 'white' || key === 'black') ? 'blue' : key;
+    // Make accent match the selected theme key directly
+    const useAccentKey = key;
     const entry = ACCENTS[useAccentKey] || ACCENTS.blue;
   setAccent(entry.hex);
   setAccentKey(key);
@@ -95,6 +95,31 @@ const Portfolio = () => {
   ];
 
   const sections = ['home', 'about', 'experiences', 'projects', 'game', 'contact'];
+  const games = [
+    { key: 'tetris', label: 'tetris · classic puzzle game', Comp: GameTetris },
+    { key: 'cards', label: 'cards · quick score‑chase', Comp: GameRoguelite },
+    { key: 'mega', label: 'megastructure · text horror + foggy pillars', Comp: GameMegastructure },
+  ];
+  const [gameIndex, setGameIndex] = useState(0);
+  const [prevIndex, setPrevIndex] = useState(null);
+  const [fadeStage, setFadeStage] = useState(0); // 0 = start (opaque), 1 = faded to 0
+  const fadeTimerRef = React.useRef(null);
+  const switchTo = (next) => {
+    if (next === gameIndex) return;
+    // prepare previous overlay
+    setPrevIndex(gameIndex);
+    setGameIndex(((next % games.length) + games.length) % games.length);
+    setFadeStage(0);
+    // kick the fade on the next frame so CSS transition animates 1 -> 0
+    requestAnimationFrame(() => requestAnimationFrame(() => setFadeStage(1)));
+    // cleanup previous after transition
+    if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
+    fadeTimerRef.current = setTimeout(() => {
+      setPrevIndex(null);
+    }, 350);
+  };
+  const nextGame = () => switchTo(gameIndex + 1);
+  const prevGame = () => switchTo(gameIndex - 1);
   const scrollToSection = (i) => {
     const el = document.getElementById(sections[i]);
     if (el) {
@@ -296,25 +321,35 @@ interests = ['embedded', 'graphics', 'data']`}</pre>
       {/* games */}
       <section id="game" className="py-20 md:py-36 px-5 md:px-8">
         <div className="max-w-5xl mx-auto">
-          <h2 className={"text-base md:text-lg mb-6 md:mb-8 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>games</h2>
-          <div className="grid grid-cols-1 gap-10">
-            {/* Tetris */}
-            <div className="text-[11px] text-site opacity-70">tetris · classic puzzle game</div>
-            <Suspense fallback={<div className="text-[11px] text-site opacity-70">loading tetris…</div>}>
-              <GameTetris themeKey={accentKey} accent={accent} />
-            </Suspense>
-
-            {/* Card Roguelite */}
-            <div className="text-[11px] text-site opacity-70">cards · quick score‑chase</div>
-            <Suspense fallback={<div className="text-[11px] text-site opacity-70">loading cards…</div>}>
-              <GameRoguelite themeKey={accentKey} accent={accent} />
-            </Suspense>
-
-            {/* Megastructure (text horror + 3D ambience) */}
-            <div className="text-[11px] text-site opacity-70">megastructure · text horror + foggy pillars</div>
-            <Suspense fallback={<div className="text-[11px] text-site opacity-70">loading megastructure…</div>}>
-              <GameMegastructure themeKey={accentKey} accent={accent} />
-            </Suspense>
+          <h2 className={"text-base md:text-lg mb-4 md:mb-6 flex items-center justify-between " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>
+            <span>games</span>
+            <span className="text-[11px] text-site/70">use arrows to switch</span>
+          </h2>
+          <div className="relative">
+            {/* label */}
+            <div className="text-[11px] text-site opacity-70 mb-2">{games[gameIndex].label}</div>
+            {/* game viewport */}
+            <div className="px-10 relative">{/* padding so arrows don't overlap canvas; relative for overlay */}
+              <Suspense fallback={<div className="text-[11px] text-site opacity-70">loading…</div>}>
+                {(() => {
+                  const C = games[gameIndex].Comp;
+                  return <C themeKey={accentKey} accent={accent} />
+                })()}
+              </Suspense>
+              {prevIndex !== null && (
+                <div className={`pointer-events-none absolute inset-0 transition-opacity duration-300 ${fadeStage === 1 ? 'opacity-0' : 'opacity-100'}`}>
+                  <Suspense fallback={null}>
+                    {(() => {
+                      const Prev = games[prevIndex].Comp;
+                      return <Prev themeKey={accentKey} accent={accent} />
+                    })()}
+                  </Suspense>
+                </div>
+              )}
+            </div>
+            {/* arrows (placed after to sit above but not block canvas entrance) */}
+            <button aria-label="previous game" onClick={prevGame} className="absolute left-0 top-1/2 -translate-y-1/2 z-20 btn-accent rounded-full w-8 h-8 flex items-center justify-center opacity-90">‹</button>
+            <button aria-label="next game" onClick={nextGame} className="absolute right-0 top-1/2 -translate-y-1/2 z-20 btn-accent rounded-full w-8 h-8 flex items-center justify-center opacity-90">›</button>
           </div>
         </div>
       </section>

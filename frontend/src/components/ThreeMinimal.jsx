@@ -18,7 +18,7 @@ export default function ThreeMinimal({ accent = '#ffc6a1' }) {
     const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 2000);
     camera.position.set(0, 0, 18);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setSize(width, height);
     renderer.setPixelRatio(window.devicePixelRatio || 1);
     renderer.domElement.style.width = '100%';
@@ -44,7 +44,8 @@ export default function ThreeMinimal({ accent = '#ffc6a1' }) {
     scene.add(grid);
 
     // Particles field
-    const count = 1200;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const count = Math.floor(900 * (1 + (dpr-1)*0.5));
     const positions = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
       const ix = i * 3;
@@ -74,8 +75,17 @@ export default function ThreeMinimal({ accent = '#ffc6a1' }) {
       scrollY = window.scrollY || 0;
     };
     window.addEventListener('scroll', onScroll, { passive: true });
-    function animate() {
+    let last = 0;
+    const fps = 45; // cap to 45fps for light background
+    const interval = 1000 / fps;
+    let inView = true;
+    const io = new IntersectionObserver(([entry]) => { inView = !!(entry && entry.isIntersecting); }, { threshold: [0, 0.15, 1] });
+    io.observe(mount);
+    function animate(now = 0) {
       const t = clock.getElapsedTime();
+      if (now - last < interval) { raf = requestAnimationFrame(animate); return; }
+      last = now;
+      if (!inView) { raf = requestAnimationFrame(animate); return; }
       // subtle parallax based on scroll
       const s = Math.min(scrollY / 800, 1);
       camera.position.z = 18 - s * 2.0; // slight zoom out on scroll
@@ -99,6 +109,7 @@ export default function ThreeMinimal({ accent = '#ffc6a1' }) {
     window.addEventListener('resize', onResize);
 
     return () => {
+      io.disconnect();
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
       if (raf) cancelAnimationFrame(raf);

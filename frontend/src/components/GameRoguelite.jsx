@@ -240,7 +240,7 @@ export default function GameRoguelite({ themeKey = 'dark', accent = '#74b0d6' })
   };
 
   return (
-    <div className="w-full min-h-[85vh] rounded-lg border border-accent-25 bg-black/20 relative overflow-hidden">
+    <div className="w-full h-[85vh] rounded-lg border border-accent-25 bg-black/20 relative overflow-hidden">
       <Canvas camera={{ position: [0, 1.8, 3.6], fov: 45 }} dpr={[1, 2]}>
         <color attach="background" args={[darkCards ? '#0b0b0b' : '#0a0a0a']} />
         <Scene state={state} playCard={playCard} darkCards={darkCards} />

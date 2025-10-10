@@ -421,7 +421,7 @@ export default function GameMegastructure({ themeKey = 'dark', accent = '#74b0d6
   }
 
   return (
-    <div className="w-full min-h-[85vh] rounded-lg border border-accent-25 bg-black/30 relative overflow-hidden">
+    <div className="w-full h-[85vh] rounded-lg border border-accent-25 bg-black/30 relative overflow-hidden">
       {/* Three.js ambience */}
       <Canvas camera={{ position: [0, 9, 10], fov: 50 }} dpr={[1, 2]}>
         <color attach="background" args={[darkBg]} />

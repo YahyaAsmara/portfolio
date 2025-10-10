@@ -142,6 +142,10 @@ function Piece({ pieceRef }) {
         }
       }
     }
+    // hide any remaining unused cubes
+    for (let j = i; j < children.length; j++) {
+      children[j].visible = false;
+    }
   });
   return <group ref={group} />;
 }
@@ -329,7 +333,7 @@ export default function GameTetris({ themeKey = 'dark', accent = '#74b0d6' }) {
     <div
       ref={containerRef}
       tabIndex={0}
-      className="w-full min-h-[100vh] rounded-lg border border-accent-25 bg-black/20 relative overflow-hidden outline-none"
+      className="w-full h-[100vh] rounded-lg border border-accent-25 bg-black/20 relative overflow-hidden outline-none"
       onContextMenu={(e) => e.preventDefault()}
       onMouseDown={() => {
         // ensure focus on click anywhere inside
