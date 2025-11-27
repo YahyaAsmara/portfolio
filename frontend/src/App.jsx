@@ -6,6 +6,29 @@ const GameMegastructure = React.lazy(() => import('./components/GameMegastructur
 const GameTetris = React.lazy(() => import('./components/GameTetris'));
 const GameRoguelite = React.lazy(() => import('./components/GameRoguelite'));
 
+const clamp = (value, min = 0, max = 255) => Math.max(min, Math.min(max, value));
+const hexToRgb = (hex) => {
+  if (!hex) return { r: 255, g: 255, b: 255 };
+  let normalized = hex.replace('#', '');
+  if (normalized.length === 3) {
+    normalized = normalized.split('').map((ch) => ch + ch).join('');
+  }
+  if (normalized.length >= 6) {
+    normalized = normalized.slice(0, 6);
+  }
+  const intVal = parseInt(normalized, 16);
+  return {
+    r: (intVal >> 16) & 255,
+    g: (intVal >> 8) & 255,
+    b: intVal & 255,
+  };
+};
+const rgbToHex = (r, g, b) => `#${[r, g, b].map((v) => clamp(Math.round(v)).toString(16).padStart(2, '0')).join('')}`;
+const tintHex = (hex, ratio = 0.65) => {
+  const { r, g, b } = hexToRgb(hex);
+  return rgbToHex(r + (255 - r) * ratio, g + (255 - g) * ratio, b + (255 - b) * ratio);
+};
+
 const Portfolio = () => {
   const [currentSection, setCurrentSection] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -13,7 +36,7 @@ const Portfolio = () => {
   const [accentKey, setAccentKey] = useState('blue');
 
   const ACCENTS = {
-    red: { hex: '#fe7373ff', rgb: '239,68,68', contrast: '#ffffff' },
+    red: { hex: '#fe7373', rgb: '239,68,68', contrast: '#ffffff' },
     blue: { hex: '#74b0d6', rgb: '116,176,214', contrast: '#000000' },
     green: { hex: '#34d399', rgb: '52,211,153', contrast: '#000000' },
     yellow: { hex: '#f59e0b', rgb: '245,158,11', contrast: '#000000' },
@@ -23,37 +46,59 @@ const Portfolio = () => {
   };
 
   const applyAccent = (key) => {
-    // Make accent match the selected theme key directly
     const useAccentKey = key;
     const entry = ACCENTS[useAccentKey] || ACCENTS.blue;
-  setAccent(entry.hex);
-  setAccentKey(key);
-    try { localStorage.setItem('accent-key', key); } catch {}
     const root = document.documentElement;
-  root.setAttribute('data-theme', key);
+    const tinted = tintHex(entry.hex, 0.82);
+    const secondaryTint = tintHex(entry.hex, 0.65);
+    setAccent(entry.hex);
+    setAccentKey(key);
+    try { localStorage.setItem('accent-key', key); } catch {}
+    root.setAttribute('data-theme', key);
     root.style.setProperty('--accent-hex', entry.hex);
     root.style.setProperty('--accent-rgb', entry.rgb);
     root.style.setProperty('--accent-contrast', entry.contrast);
-    // Adjust site/terminal colors for black/white themes
+
+    const setThemeColors = ({ siteBg, siteFg, terminalBg, terminalFg, cardBg, cardFg, sectionBg }) => {
+      root.style.setProperty('--site-bg', siteBg);
+      root.style.setProperty('--site-fg', siteFg);
+      root.style.setProperty('--terminal-bg', terminalBg);
+      root.style.setProperty('--terminal-fg', terminalFg);
+      root.style.setProperty('--card-bg', cardBg);
+      root.style.setProperty('--card-fg', cardFg);
+      root.style.setProperty('--section-bg', sectionBg);
+    };
+
     if (key === 'black') {
-      root.style.setProperty('--site-bg', '#000000');
-      root.style.setProperty('--site-fg', '#ffffff');
-      root.style.setProperty('--terminal-bg', 'rgba(0,0,0,0.78)');
-      root.style.setProperty('--terminal-fg', '#ffffff');
-      root.style.setProperty('--card-bg', 'rgba(0,0,0,0.40)');
+      setThemeColors({
+        siteBg: '#000000',
+        siteFg: '#ffffff',
+        terminalBg: 'rgba(0,0,0,0.85)',
+        terminalFg: '#ffffff',
+        cardBg: 'rgba(15,15,15,0.6)',
+        cardFg: '#ffffff',
+        sectionBg: 'rgba(255,255,255,0.08)',
+      });
     } else if (key === 'white') {
-      root.style.setProperty('--site-bg', '#f8fafc');
-      root.style.setProperty('--site-fg', '#0b0f13');
-      root.style.setProperty('--terminal-bg', 'rgba(255,255,255,0.80)');
-      root.style.setProperty('--terminal-fg', '#0b0f13');
-      root.style.setProperty('--card-bg', '#111111');
+      setThemeColors({
+        siteBg: '#f8fafc',
+        siteFg: '#0b0f13',
+        terminalBg: 'rgba(255,255,255,0.92)',
+        terminalFg: '#0b0f13',
+        cardBg: '#111111',
+        cardFg: '#ffffff',
+        sectionBg: 'rgba(0,0,0,0.06)',
+      });
     } else {
-      // default scheme
-      root.style.setProperty('--site-bg', '#0f0b0a');
-      root.style.setProperty('--site-fg', '#ffe5d6');
-      root.style.setProperty('--terminal-bg', 'rgba(0, 0, 0, 0.70)');
-      root.style.setProperty('--terminal-fg', '#e8f5fc');
-      root.style.setProperty('--card-bg', 'rgba(0,0,0,0.40)');
+      setThemeColors({
+        siteBg: '#050608',
+        siteFg: tinted,
+        terminalBg: 'rgba(4,7,14,0.82)',
+        terminalFg: tinted,
+        cardBg: 'rgba(5,8,14,0.68)',
+        cardFg: secondaryTint,
+        sectionBg: 'rgba(4,7,12,0.55)',
+      });
     }
   };
 
@@ -77,7 +122,34 @@ const Portfolio = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const projects = [
+  const featuredProjects = [
+    {
+      name: 'NLP GenZ Translator',
+      description: 'Full-stack translator that bridges traditional English and Gen Z slang with real-time context hints.',
+      tech: ['React', 'Spring Boot', 'PostgreSQL', 'Docker', 'Vercel', 'Render'],
+      link: 'https://github.com/YahyaAsmara/nlp-genz-translator',
+    },
+    {
+      name: 'Hackathon Management Tool',
+      description: 'Hack The Change 2025 ops platform streamlining registration, scheduling, and team workflows for 400+ attendees.',
+      tech: ['TypeScript', 'AWS', 'Figma', 'Agile'],
+      link: 'https://github.com/YahyaAsmara/hackathon-management-tool',
+    },
+    {
+      name: 'DICOM to NIfTI Pipeline',
+      description: 'Automated medical imaging conversion and visualization stack with HIPAA-conscious storage and alerts.',
+      tech: ['Python', 'Streamlit', 'AWS S3', 'boto3'],
+      link: 'https://github.com/YahyaAsmara/dicom-to-nifti',
+    },
+    {
+      name: 'Experience Ventures Directory',
+      description: 'Data-backed directory aligning 34+ ventures across B2B/B2C/SaaS/PaaS models for faster partner discovery.',
+      tech: ['SQL', 'Data Modeling', 'Stakeholder Ops'],
+      link: 'https://github.com/YahyaAsmara/experience-ventures-directory',
+    },
+  ];
+
+  const archiveProjects = [
     { name: 'genz-translator', description: 'A translator targeting Gen Z vernacular and modern slang.', tech: ['JavaScript', 'NLP', 'Java', 'PostgreSQL'], link: 'https://github.com/YahyaAsmara/genz-translator' },
     { name: '3js_minecraft', description: 'Minecraft-inspired 3D rendering demo built with Three.js.', tech: ['Three.js', 'WebGL'], link: 'https://github.com/YahyaAsmara/3js_minecraft' },
     { name: 'LawHub', description: 'Legal research and document tooling platform.', tech: ['HTML', 'CSS', 'JavaScript'], link: 'https://github.com/YahyaAsmara/LawHub' },
@@ -86,12 +158,23 @@ const Portfolio = () => {
     { name: 'Hackountant', description: 'Account application for Calgary Hacks 2024.', tech: ['Java'], link: 'https://github.com/ShakH00/Hackountant' },
   ];
 
-  const workingOn = [
-    { name: 'high-fidelity-agriculture-simulation', description: 'farm', link: 'https://github.com/YahyaAsmara/high-fidelity-agriculture-simulation' },
-    { name: 'energy-simulation', description: 'raspberry pi energy', link: 'https://github.com/YahyaAsmara/energy-simulation' },
-    { name: 'mining-platform', description: 'real mining', link: 'https://github.com/YahyaAsmara/mining-platform' },
-    { name: 'calgary-crime-analysis', description: 'data w/ sql', link: 'https://github.com/YahyaAsmara/calgary-crime-analysis' },
-    { name: 'staircases', description: 'c sharp game', link: 'https://github.com/YahyaAsmara/Staircases' },
+  const skillGroups = [
+    {
+      name: 'Languages',
+      items: ['Java', 'Python', 'C', 'C++', 'C#', 'SQL', 'JavaScript', 'HTML/CSS', 'R', 'PHP', 'Haskell', 'Sage 50'],
+    },
+    {
+      name: 'Technologies',
+      items: ['TypeScript/React', 'Node/Next.js', 'Spring Boot', 'PostgreSQL', 'Microsoft SQL Server', 'MySQL', 'TailwindCSS'],
+    },
+    {
+      name: 'Platforms & Cloud',
+      items: ['AWS (DynamoDB, Amplify, EC2, Kinesis)', 'Vercel', 'Render', 'Docker'],
+    },
+    {
+      name: 'Tools & UI',
+      items: ['Figma', 'SceneBuilder', 'KeyNoteVR', 'JavaSwing'],
+    },
   ];
 
   const sections = ['home', 'about', 'experiences', 'projects', 'game', 'contact'];
@@ -217,7 +300,9 @@ const Portfolio = () => {
         <div className="relative z-10 w-full px-5 pt-24 md:pt-32">
           <div className="text-center mb-10 md:mb-16">
             <h1 className={"text-3xl sm:text-5xl md:text-6xl tracking-tight " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>yahya asmara</h1>
-            <p className={"text-xs sm:text-sm md:text-base mt-3 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site opacity-80' : 'text-accent-strong opacity-80')}>cs @ university of calgary · full‑stack · three.js</p>
+            <p className={"text-xs sm:text-sm md:text-base mt-3 leading-relaxed " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site opacity-80' : 'text-accent-strong opacity-80')}>
+              calgary-based software developer · cs @ university of calgary · building equitable tooling for communities
+            </p>
           </div>
           <div className="max-w-3xl mx-auto">
             <TerminalWindow onCommand={onTerminalCommand} />
@@ -243,10 +328,11 @@ const Portfolio = () => {
           <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-stretch">
             <div className="order-2 md:order-1">
               <div className="bg-card border border-accent-25 rounded p-5 md:p-7 leading-relaxed text-card">
-                <pre className="whitespace-pre-wrap text-xs md:text-sm">{`// hello, i'm yahya
-// i build minimalist interfaces and playful 3d experiments.
-stack = ['react', 'three.js', 'python', 'java', 'c']
-interests = ['embedded', 'graphics', 'data']`}</pre>
+                <pre className="whitespace-pre-wrap text-xs md:text-sm">{`// hey there — i'm yahya
+const location = 'Calgary, Alberta';
+const currentRole = 'Software Developer @ CodeTheChangeYYC';
+const studies = 'BSc Computer Science, UCalgary';
+const focus = ['full-stack systems', 'hackathons', 'medical imaging'];`}</pre>
               </div>
             </div>
               <div className="order-1 md:order-2 h-full">
@@ -264,20 +350,28 @@ interests = ['embedded', 'graphics', 'data']`}</pre>
           <h2 className={"text-base md:text-lg mb-6 md:mb-8 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>experiences</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <div className="bg-card border border-accent-25 rounded p-4 md:p-5">
-              <h3 className="text-sm text-card mb-1">Experience Ventures × Building Bridges (TIES), University of Calgary</h3>
-              <p className="text-[11px] text-card opacity-70 mb-2">Dec 2024 – Mar 2025</p>
+              <h3 className="text-sm text-card mb-1">Software Developer — CodeTheChangeYYC</h3>
+              <p className="text-[11px] text-card opacity-70 mb-2">Oct 2025 – Present</p>
               <ul className="text-[11px] text-card opacity-80 space-y-1 list-disc pl-4">
-                <li>Worked with 34+ businesses across B2B/B2C/SaaS/PaaS; sharpened venture strategy.</li>
-                <li>Built a searchable business directory to streamline stakeholder communication.</li>
-                <li>Collaborated with peers to deliver insights and expand partner networks.</li>
+                <li>Engineering a full-stack Hackathon Management Tool powering 400+ participants for Hack The Change 2025.</li>
+                <li>Shepherding agile delivery across 20+ branches with weekly reviews and 95%+ code quality targets.</li>
+                <li>Deploying AWS infrastructure plus TypeScript UI systems shaped from Figma mocks and Jira sprints.</li>
               </ul>
             </div>
             <div className="bg-card border border-accent-25 rounded p-4 md:p-5">
-              <h3 className="text-sm text-card mb-1">Academic Tutor, EducationWise Inc. — Calgary, AB</h3>
+              <h3 className="text-sm text-card mb-1">Academic Tutor — EducationWise Inc. (Calgary)</h3>
               <p className="text-[11px] text-card opacity-70 mb-2">May 2024 – Present</p>
               <ul className="text-[11px] text-card opacity-80 space-y-1 list-disc pl-4">
-                <li>Delivered CS instruction using evidence-based methods across multiple languages.</li>
-                <li>Designed study strategies leading to measurable gains in test scores and outcomes.</li>
+                <li>Delivering specialized CS instruction with evidence-based pedagogy across multiple languages.</li>
+                <li>Designing study frameworks that measurably lift test scores and long-term academic performance.</li>
+              </ul>
+            </div>
+            <div className="bg-card border border-accent-25 rounded p-4 md:p-5">
+              <h3 className="text-sm text-card mb-1">Product Developer — Experience Ventures, UCalgary</h3>
+              <p className="text-[11px] text-card opacity-70 mb-2">Dec 2024 – Mar 2025</p>
+              <ul className="text-[11px] text-card opacity-80 space-y-1 list-disc pl-4">
+                <li>Partnered with 34+ Building Bridges (TIES) ventures across B2B/B2C/SaaS/PaaS models.</li>
+                <li>Correlated insights into a living business directory that accelerated stakeholder communication.</li>
               </ul>
             </div>
             <div className="bg-card border border-accent-25 rounded p-4 md:p-5">
@@ -292,8 +386,12 @@ interests = ['embedded', 'graphics', 'data']`}</pre>
       <section id="projects" className="py-20 md:py-36 px-5 md:px-8 bg-section border-y border-accent-20">
         <div className="max-w-6xl mx-auto">
           <h2 className={"text-base md:text-lg mb-10 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>projects</h2>
+          <p className="text-[11px] text-card opacity-80 max-w-3xl mb-6">
+            A mix of shipping notes, hackathon utilities, and research prototypes. Everything else lives on{' '}
+            <a href="https://github.com/YahyaAsmara" target="_blank" rel="noopener noreferrer" className="border-b border-accent-40 hover:border-accent-70">github.com/YahyaAsmara</a>.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {projects.map((project) => (
+            {featuredProjects.map((project) => (
               <div key={project.name} className="bg-card border border-accent-25 p-5 md:p-6 rounded hover:border-accent-40 transition-colors">
                 <h3 className="text-sm md:text-base text-card mb-2 tracking-wide">{project.name}</h3>
                 <p className="text-card opacity-80 mb-3 text-xs leading-relaxed">{project.description}</p>
@@ -306,13 +404,29 @@ interests = ['embedded', 'graphics', 'data']`}</pre>
               </div>
             ))}
           </div>
-          <h3 className={"text-sm md:text-base mt-10 md:mt-16 mb-4 md:mb-6 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>working on</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {workingOn.map((project) => (
-              <a key={project.name} href={project.link} target="_blank" rel="noopener noreferrer" className="bg-card border border-accent-25 rounded p-4 hover:border-accent-40 transition-all duration-300">
-                <h4 className="text-xs text-card truncate mb-1">{project.name}</h4>
-                <p className="text-[11px] text-card opacity-70 leading-relaxed">{project.description}</p>
+          <h3 className={"text-sm md:text-base mt-12 mb-4 md:mb-6 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>more builds</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {archiveProjects.map((project) => (
+              <a key={project.name} href={project.link} target="_blank" rel="noopener noreferrer" className="bg-card border border-accent-25 rounded p-4 hover:border-accent-40 transition-colors flex flex-col gap-2">
+                <div>
+                  <h4 className="text-sm text-card mb-1">{project.name}</h4>
+                  <p className="text-[11px] text-card opacity-75 leading-relaxed">{project.description}</p>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {project.tech.map((tech) => (
+                    <span key={tech} className="text-[9px] chip-accent border px-2 py-0.5 rounded">{tech}</span>
+                  ))}
+                </div>
               </a>
+            ))}
+          </div>
+          <h3 className={"text-sm md:text-base mt-10 md:mt-16 mb-4 md:mb-6 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>technical skills</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {skillGroups.map((group) => (
+              <div key={group.name} className="bg-card border border-accent-25 rounded p-4 md:p-5 flex flex-col gap-2">
+                <h4 className="text-xs md:text-sm text-card uppercase tracking-[0.18em]">{group.name}</h4>
+                <p className="text-[11px] text-card opacity-80 leading-relaxed">{group.items.join(' • ')}</p>
+              </div>
             ))}
           </div>
         </div>
@@ -323,7 +437,7 @@ interests = ['embedded', 'graphics', 'data']`}</pre>
         <div className="max-w-5xl mx-auto">
           <h2 className={"text-base md:text-lg mb-4 md:mb-6 flex items-center justify-between " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>
             <span>games</span>
-            <span className="text-[11px] text-site/70">use arrows to switch</span>
+            <span className="text-[11px] text-site opacity-70">use arrows to switch</span>
           </h2>
           <div className="relative">
             {/* label */}
@@ -354,15 +468,48 @@ interests = ['embedded', 'graphics', 'data']`}</pre>
         </div>
       </section>
 
+      {/* bridge hero */}
+      <section className="px-5 md:px-8 pb-10">
+        <div className="max-w-6xl mx-auto">
+          <div className="dither-hero border border-accent-25 rounded-3xl p-6 md:p-10">
+            <div className="relative z-10 grid md:grid-cols-[1.1fr_0.9fr] gap-8 md:gap-12 text-site">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.4em] mb-3 opacity-80">signal bridge</p>
+                <h3 className="text-2xl md:text-4xl font-semibold mb-4">From playful prototypes to community infrastructure.</h3>
+                <p className="text-sm md:text-base text-site opacity-80 leading-relaxed mb-6">
+                  I like to ship experiences that feel handcrafted dithered gradients, glitchy canvases, and calm typography,
+                  then wire them into serious systems like hackathon operations and medical imaging pipelines.
+                  This hero stitches the experimental game lab above to the contact hub below.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <a href="#contact" className="btn-accent rounded-full px-4 py-2 text-xs md:text-sm">reach out</a>
+                  <a href="#game" className="rounded-full px-4 py-2 text-xs md:text-sm border border-accent-40 text-site opacity-90 hover:border-accent-70">replay a game</a>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-left">
+                {[{ label: 'participants shipped', value: '400+' }, { label: 'ventures analyzed', value: '34+' }, { label: 'branches wrangled', value: '20+' }, { label: 'datasets processed', value: '100+' }].map((stat) => (
+                  <div key={stat.label} className="bg-card border border-accent-25 rounded-2xl p-4">
+                    <p className="text-2xl md:text-3xl font-semibold text-site">{stat.value}</p>
+                    <p className="text-[11px] uppercase tracking-[0.3em] text-site opacity-70">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* contact */}
       <section id="contact" className="py-20 md:py-36 px-5 md:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className={"text-base md:text-lg mb-8 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>contact</h2>
+          <h2 className={"text-base md:text-lg mb-6 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>contact</h2>
+          <p className="text-sm text-site opacity-80 mb-8">Always happy to talk about hackathons, research tooling, or cool Three.js experiments.</p>
           <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8">
-            <a href="mailto:yahya16005@gmail.com" className="text-xs md:text-sm border-b border-accent-40 hover:border-accent-70 text-site contact-link">Email</a>
-            <a href="https://github.com/YahyaAsmara" target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm border-b border-accent-40 hover:border-accent-70 text-site contact-link">GitHub</a>
-            <a href="https://linkedin.com/in/yahya-asmara" target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm border-b border-accent-40 hover:border-accent-70 text-site contact-link">LinkedIn</a>
+            <a href="mailto:yahya16005@gmail.com" className="text-xs md:text-sm border-b border-accent-40 hover:border-accent-70 text-site">Email</a>
+            <a href="https://linkedin.com/in/yahya-asmara" target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm border-b border-accent-40 hover:border-accent-70 text-site">LinkedIn</a>
+            <a href="https://github.com/YahyaAsmara" target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm border-b border-accent-40 hover:border-accent-70 text-site">GitHub</a>
           </div>
+          <p className="text-[11px] text-site opacity-70 mt-8">Calgary, Alberta</p>
         </div>
       </section>
 

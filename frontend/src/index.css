@@ -16,8 +16,8 @@
     padding: 0;
     font-family: 'Lexend Deca', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
     font-weight: 200;
-    background-color: #0f0b0a; /* warm black */
-    color: #ffe5d6; /* peachy text */
+    background-color: var(--site-bg);
+    color: var(--site-fg);
     overflow-x: hidden;
   }
   
@@ -41,13 +41,13 @@
     --accent-text-strong: color-mix(in sRGB, rgb(var(--accent-rgb)) 70%, white);
 
   /* Site/terminal color variables (updated for black/white themes) */
-  --site-bg: #0f0b0a;
-  --site-fg: #ffe5d6;
-  --terminal-bg: rgba(0, 0, 0, 0.70);
-  --terminal-fg: #e8f5fc;
-  --card-bg: rgba(0,0,0,0.40);
-  --card-fg: var(--site-fg);
-  --section-bg: rgba(0,0,0,0.30);
+  --site-bg: #050608;
+  --site-fg: #ecf4ff;
+  --terminal-bg: rgba(4,7,14,0.82);
+  --terminal-fg: #ecf4ff;
+  --card-bg: rgba(5,8,14,0.68);
+  --card-fg: #dce6ff;
+  --section-bg: rgba(4,7,12,0.55);
 
     --background: 15 35% 6%;   /* warm black */
   --foreground: 204 60% 90%; /* blue-ish text */
@@ -188,6 +188,40 @@ section[id] { scroll-margin-top: 12vh; }
 @keyframes rg-scroll {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
+}
+
+.dither-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 32px;
+  background-color: #050608;
+  background-image:
+    radial-gradient(circle at 18% 22%, color-mix(in sRGB, rgb(var(--accent-rgb)) 45%, transparent) 0, transparent 48%),
+    radial-gradient(circle at 82% 18%, rgba(244, 114, 182, 0.25) 0, transparent 52%),
+    radial-gradient(circle at 68% 80%, rgba(59, 130, 246, 0.18) 0, transparent 60%),
+    linear-gradient(125deg, rgba(4, 9, 15, 0.95) 0%, rgba(6, 10, 18, 0.92) 55%, rgba(23, 7, 5, 0.9) 100%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0 2px, rgba(0, 0, 0, 0.02) 2px 4px);
+  background-blend-mode: screen, screen, screen, normal, overlay;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.45);
+}
+
+.dither-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.12), transparent 55%);
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.dither-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.45;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23000000'/%3E%3Cpath d='M0 0h8v8H0zM8 8h8v8H8z' fill='%230f0f16'/%3E%3Cpath d='M0 8h8v8H0zM8 0h8v8H8z' fill='%23181825'/%3E%3C/svg%3E");
 }
 
 @layer base {
