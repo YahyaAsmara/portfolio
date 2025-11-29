@@ -150,12 +150,12 @@ const Portfolio = () => {
   ];
 
   const archiveProjects = [
-    { name: 'genz-translator', description: 'A translator targeting Gen Z vernacular and modern slang.', tech: ['JavaScript', 'NLP', 'Java', 'PostgreSQL'], link: 'https://github.com/YahyaAsmara/genz-translator' },
     { name: '3js_minecraft', description: 'Minecraft-inspired 3D rendering demo built with Three.js.', tech: ['Three.js', 'WebGL'], link: 'https://github.com/YahyaAsmara/3js_minecraft' },
-    { name: 'LawHub', description: 'Legal research and document tooling platform.', tech: ['HTML', 'CSS', 'JavaScript'], link: 'https://github.com/YahyaAsmara/LawHub' },
-    { name: 'DICOM', description: 'Medical imaging tools around the DICOM format.', tech: ['Python', 'Medical Imaging', 'AWS'], link: 'https://github.com/YahyaAsmara/DICOM' },
-    { name: 'hamlet', description: 'A project named Hamlet made in high school.', tech: ['HTML', 'CSS', 'JavaScript'], link: 'https://github.com/YahyaAsmara/hamlet' },
-    { name: 'Hackountant', description: 'Account application for Calgary Hacks 2024.', tech: ['Java'], link: 'https://github.com/ShakH00/Hackountant' },
+    { name: 'calgary-crime-analysis', description: 'SQL + data visualization pipeline exploring Calgary crime trends.', tech: ['Python', 'SQL', 'Data Viz'], link: 'https://github.com/YahyaAsmara/calgary-crime-analysis' },
+    { name: 'energy-simulation', description: 'Raspberry Pi energy logger + simulator with automation hooks.', tech: ['Python', 'IoT', 'Automation'], link: 'https://github.com/YahyaAsmara/energy-simulation' },
+    { name: 'high-fidelity-agriculture-simulation', description: 'High-fidelity crop cycles and soil experimentation prototype.', tech: ['Unity', 'C#', 'Simulation'], link: 'https://github.com/YahyaAsmara/high-fidelity-agriculture-simulation' },
+    { name: 'mining-platform', description: 'Sensor-aware mining analytics platform for real-time dashboards.', tech: ['TypeScript', 'Node.js', 'Data'], link: 'https://github.com/YahyaAsmara/mining-platform' },
+    { name: 'Staircases', description: 'Vertical roguelike prototype experimenting with stair-based traversal.', tech: ['C#', 'Unity', 'Game Dev'], link: 'https://github.com/YahyaAsmara/Staircases' },
   ];
 
   const skillGroups = [
@@ -345,39 +345,60 @@ const focus = ['full-stack systems', 'hackathons', 'medical imaging'];`}</pre>
       </section>
 
       {/* experiences */}
-  <section id="experiences" className="pt-8 md:pt-12 pb-12 md:pb-16 px-5 md:px-8">
-        <div className="max-w-6xl mx-auto">
-          <h2 className={"text-base md:text-lg mb-6 md:mb-8 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>experiences</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-            <div className="bg-card border border-accent-25 rounded p-4 md:p-5">
-              <h3 className="text-sm text-card mb-1">Software Developer — CodeTheChangeYYC</h3>
-              <p className="text-[11px] text-card opacity-70 mb-2">Oct 2025 – Present</p>
-              <ul className="text-[11px] text-card opacity-80 space-y-1 list-disc pl-4">
-                <li>Engineering a full-stack Hackathon Management Tool powering 400+ participants for Hack The Change 2025.</li>
-                <li>Shepherding agile delivery across 20+ branches with weekly reviews and 95%+ code quality targets.</li>
-                <li>Deploying AWS infrastructure plus TypeScript UI systems shaped from Figma mocks and Jira sprints.</li>
-              </ul>
-            </div>
-            <div className="bg-card border border-accent-25 rounded p-4 md:p-5">
-              <h3 className="text-sm text-card mb-1">Academic Tutor — EducationWise Inc. (Calgary)</h3>
-              <p className="text-[11px] text-card opacity-70 mb-2">May 2024 – Present</p>
-              <ul className="text-[11px] text-card opacity-80 space-y-1 list-disc pl-4">
-                <li>Delivering specialized CS instruction with evidence-based pedagogy across multiple languages.</li>
-                <li>Designing study frameworks that measurably lift test scores and long-term academic performance.</li>
-              </ul>
-            </div>
-            <div className="bg-card border border-accent-25 rounded p-4 md:p-5">
-              <h3 className="text-sm text-card mb-1">Product Developer — Experience Ventures, UCalgary</h3>
-              <p className="text-[11px] text-card opacity-70 mb-2">Dec 2024 – Mar 2025</p>
-              <ul className="text-[11px] text-card opacity-80 space-y-1 list-disc pl-4">
-                <li>Partnered with 34+ Building Bridges (TIES) ventures across B2B/B2C/SaaS/PaaS models.</li>
-                <li>Correlated insights into a living business directory that accelerated stakeholder communication.</li>
-              </ul>
-            </div>
-            <div className="bg-card border border-accent-25 rounded p-4 md:p-5">
-              <h3 className="text-sm text-card mb-1">ICT Internship Program, CAREERS</h3>
-              <p className="text-[11px] text-card opacity-70">Jul 2022 – Aug 2022</p>
-            </div>
+      <section id="experiences" className="pt-8 md:pt-12 pb-12 md:pb-16 px-5 md:px-8">
+        <div className="max-w-5xl mx-auto">
+          <h2 className={"text-base md:text-lg mb-6 md:mb-10 " + ((accentKey === 'white' || accentKey === 'black') ? 'text-site' : 'text-accent-strong')}>experiences</h2>
+          <div className="timeline">
+            {[
+              {
+                title: 'Software Developer — CodeTheChangeYYC',
+                date: 'Oct 2025 – Present',
+                bullets: [
+                  'Engineering a full-stack Hackathon Management Tool powering 400+ participants for Hack The Change 2025.',
+                  'Shepherding agile delivery across 20+ branches with weekly reviews and 95%+ code quality targets.',
+                  'Deploying AWS infrastructure plus TypeScript UI systems shaped from Figma mocks and Jira sprints.',
+                ],
+              },
+              {
+                title: 'Academic Tutor — EducationWise Inc. (Calgary)',
+                date: 'May 2024 – Present',
+                bullets: [
+                  'Delivering specialized CS instruction with evidence-based pedagogy across multiple languages.',
+                  'Designing study frameworks that measurably lift test scores and long-term academic performance.',
+                ],
+              },
+              {
+                title: 'Product Developer — Experience Ventures, UCalgary',
+                date: 'Dec 2024 – Mar 2025',
+                bullets: [
+                  'Partnered with 34+ Building Bridges (TIES) ventures across B2B/B2C/SaaS/PaaS models.',
+                  'Correlated insights into a living business directory that accelerated stakeholder communication.',
+                ],
+              },
+              {
+                title: 'ICT Internship Program — CAREERS',
+                date: 'Jul 2022 – Aug 2022',
+                bullets: [
+                  'Rotational internship exploring ICT support and emerging tech exposure.',
+                ],
+              },
+            ].map((exp, idx) => (
+              <div key={exp.title} className="timeline-item">
+                <div className="timeline-node">
+                  <span className="timeline-dot" />
+                  {idx !== 3 && <span className="timeline-line" />}
+                </div>
+                <div className="timeline-card bg-card border border-accent-25 rounded-2xl p-4 md:p-5">
+                  <h3 className="text-sm text-card mb-1">{exp.title}</h3>
+                  <p className="text-[11px] text-card opacity-70 mb-2">{exp.date}</p>
+                  <ul className="text-[11px] text-card opacity-80 space-y-1 list-disc pl-4">
+                    {exp.bullets.map((point) => (
+                      <li key={point}>{point}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -471,28 +492,12 @@ const focus = ['full-stack systems', 'hackathons', 'medical imaging'];`}</pre>
       {/* bridge hero */}
       <section className="px-5 md:px-8 pb-10">
         <div className="max-w-6xl mx-auto">
-          <div className="dither-hero border border-accent-25 rounded-3xl p-6 md:p-10">
-            <div className="relative z-10 grid md:grid-cols-[1.1fr_0.9fr] gap-8 md:gap-12 text-site">
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.4em] mb-3 opacity-80">signal bridge</p>
-                <h3 className="text-2xl md:text-4xl font-semibold mb-4">From playful prototypes to community infrastructure.</h3>
-                <p className="text-sm md:text-base text-site opacity-80 leading-relaxed mb-6">
-                  I like to ship experiences that feel handcrafted dithered gradients, glitchy canvases, and calm typography,
-                  then wire them into serious systems like hackathon operations and medical imaging pipelines.
-                  This hero stitches the experimental game lab above to the contact hub below.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <a href="#contact" className="btn-accent rounded-full px-4 py-2 text-xs md:text-sm">reach out</a>
-                  <a href="#game" className="rounded-full px-4 py-2 text-xs md:text-sm border border-accent-40 text-site opacity-90 hover:border-accent-70">replay a game</a>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 text-left">
-                {[{ label: 'participants shipped', value: '400+' }, { label: 'ventures analyzed', value: '34+' }, { label: 'branches wrangled', value: '20+' }, { label: 'datasets processed', value: '100+' }].map((stat) => (
-                  <div key={stat.label} className="bg-card border border-accent-25 rounded-2xl p-4">
-                    <p className="text-2xl md:text-3xl font-semibold text-site">{stat.value}</p>
-                    <p className="text-[11px] uppercase tracking-[0.3em] text-site opacity-70">{stat.label}</p>
-                  </div>
-                ))}
+          <div className="flex items-center justify-center rounded-3xl border border-accent-25 p-8 md:p-12 bg-transparent">
+            <div className="sphere-stage sphere-standalone">
+              <div className="sphere-ring"></div>
+              <div className="dither-sphere" aria-hidden="true">
+                <span className="sphere-core"></span>
+                <span className="sphere-noise"></span>
               </div>
             </div>
           </div>

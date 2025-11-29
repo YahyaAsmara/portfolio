@@ -2,17 +2,17 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useMotionValue, useAnimation } from 'motion/react';
 import './RollingGallery.css';
 
-import calgary from './assets/calgary.jpg';
-import skies1 from './assets/skies1.jpg';
-import skies2 from './assets/skies2.jpg';
-import mountain from './assets/mountain.jpg';
-import mountain2 from './assets/mountain2.jpg';
-import seat1 from './assets/seat1.jpg';
+import cat1 from './assets/cat1.jpg';
+import cat2 from './assets/cat2.jpg';
+import cat3 from './assets/cat3.jpg';
+import cat4 from './assets/cat4.jpg';
+import cat5 from './assets/cat5.jpg';
+import cat6 from './assets/cat6.jpg';
 
 // Interactive 3D cylinder gallery with drag + wheel + optional autoplay
 // API-compatible: <RollingGallery autoplay={true} pauseOnHover={true} />
 export default function RollingGallery({ autoplay = false, pauseOnHover = true, images }) {
-  const imgs = useMemo(() => images && images.length ? images : [skies1, skies2, mountain, mountain2, calgary, seat1], [images]);
+  const imgs = useMemo(() => images && images.length ? images : [cat1, cat2, cat3, cat4, cat5, cat6], [images]);
   // Dates removed per request – keeping the API simple
   const tilts = useMemo(() => {
     // deterministic small tilt between -3 and +3 degrees per item

@@ -1,3 +1,56 @@
+.timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.timeline-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.25rem;
+  position: relative;
+}
+
+.timeline-node {
+  position: relative;
+  width: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent-hex);
+  box-shadow: 0 0 18px color-mix(in sRGB, rgb(var(--accent-rgb)) 40%, transparent);
+  border: 2px solid rgba(5, 6, 8, 0.55);
+}
+
+.timeline-line {
+  flex: 1;
+  width: 2px;
+  background: color-mix(in sRGB, rgb(var(--accent-rgb)) 35%, rgba(0,0,0,0.25));
+  margin-top: 12px;
+}
+
+.timeline-card {
+  backdrop-filter: blur(12px);
+  background-color: color-mix(in sRGB, var(--card-bg) 85%, rgba(255,255,255,0.12));
+  border-color: color-mix(in sRGB, rgb(var(--accent-rgb)) 25%, rgba(255,255,255,0.18));
+}
+
+@media (min-width: 768px) {
+  .timeline {
+    gap: 3rem;
+  }
+  .timeline-item {
+    gap: 1.75rem;
+  }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -222,6 +275,91 @@ section[id] { scroll-margin-top: 12vh; }
   pointer-events: none;
   mix-blend-mode: screen;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23000000'/%3E%3Cpath d='M0 0h8v8H0zM8 8h8v8H8z' fill='%230f0f16'/%3E%3Cpath d='M0 8h8v8H0zM8 0h8v8H8z' fill='%23181825'/%3E%3C/svg%3E");
+}
+
+.sphere-stage {
+  position: relative;
+  width: min(360px, 75vw);
+  aspect-ratio: 1/1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
+}
+
+.sphere-standalone {
+  width: min(300px, 65vw);
+}
+
+.sphere-ring {
+  position: absolute;
+  width: 115%;
+  height: 115%;
+  border-radius: 50%;
+  border: 1px solid var(--accent-25, rgba(255,255,255,0.2));
+  filter: drop-shadow(0 10px 30px rgba(0,0,0,0.45));
+  transform: rotateX(72deg);
+  background: radial-gradient(circle, rgba(255,255,255,0.06), transparent 60%);
+  animation: sphere-ring 8s ease-in-out infinite alternate;
+}
+
+.dither-sphere {
+  position: relative;
+  width: 80%;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  background-image:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.55), transparent 48%),
+    radial-gradient(circle at 70% 70%, rgba(0,0,0,0.6), transparent 60%),
+    linear-gradient(130deg, color-mix(in sRGB, rgb(var(--accent-rgb)) 75%, #111827) 0%, rgba(5,7,12,0.95) 60%, rgba(0,0,0,0.9) 100%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.08) 0 3px, rgba(0,0,0,0.08) 3px 6px);
+  box-shadow: inset 0 -35px 65px rgba(0,0,0,0.55), inset 0 25px 45px rgba(255,255,255,0.12), 0 45px 80px rgba(0,0,0,0.65);
+  transform: rotateX(8deg) rotateY(-12deg);
+  overflow: hidden;
+  animation: sphere-glow 12s ease-in-out infinite;
+}
+
+.sphere-core {
+  position: absolute;
+  inset: 15%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, rgba(255,255,255,0.7), transparent 55%);
+  mix-blend-mode: screen;
+  filter: blur(6px);
+}
+
+.sphere-noise {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  mix-blend-mode: soft-light;
+  opacity: 0.45;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' fill='rgba(0,0,0,0)'/%3E%3Cpath d='M0 0h12v12H0zM12 12h12v12H12z' fill='rgba(255,255,255,0.08)'/%3E%3Cpath d='M0 12h12v12H0zM12 0h12v12H12z' fill='rgba(0,0,0,0.15)'/%3E%3C/svg%3E");
+  animation: sphere-noise 5s linear infinite;
+}
+
+@keyframes sphere-glow {
+  0% { transform: rotateX(6deg) rotateY(-10deg); }
+  50% { transform: rotateX(10deg) rotateY(-14deg); }
+  100% { transform: rotateX(6deg) rotateY(-10deg); }
+}
+
+@keyframes sphere-ring {
+  0% { transform: rotateX(68deg) rotateZ(-6deg); opacity: 0.7; }
+  100% { transform: rotateX(76deg) rotateZ(6deg); opacity: 0.9; }
+}
+
+@keyframes sphere-noise {
+  0% { background-position: 0 0; }
+  100% { background-position: 120px 120px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dither-sphere,
+  .sphere-ring,
+  .sphere-noise {
+    animation: none;
+  }
 }
 
 @layer base {
