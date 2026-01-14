@@ -14,7 +14,8 @@ const Blog: React.FC = () => {
       <aside className="sidebar">
         <div className="sidebar-content">
           <h1 className="name">yahya asmara</h1>
-          <p className="title">cs guy</p>
+          <p className="title">computer science</p>
+          <p className="location">calgary, canada</p>
           
           <nav className="nav">
             <Link to="/">home</Link>
