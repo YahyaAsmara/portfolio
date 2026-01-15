@@ -42,14 +42,21 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+.app-wrapper {
+  display: flex;
+  width: 100%;
+  max-width: 1080px;
+  position: relative;
+}
+
 /* Sidebar */
 .sidebar {
-  width: 280px;
-  min-width: 280px;
+  width: 220px;
+  min-width: 220px;
   background-color: var(--bg-primary);
   border-right: none;
   padding: 3rem 2rem;
-  position: sticky;
+  position: fixed;
   top: 0;
   height: 100vh;
   overflow-y: auto;
@@ -145,8 +152,16 @@
 /* Main Content */
 .main-content {
   flex: 1;
-  max-width: 800px;
-  padding: 3rem 3rem 3rem 4rem;
+  max-width: 750px;
+  padding: 3rem 2rem 3rem 2rem;
+  margin-left: 93px;
+}
+
+/* Spacer to account for fixed sidebar */
+.sidebar-spacer {
+  width: 220px;
+  min-width: 220px;
+  flex-shrink: 0;
 }
 
 .section {

@@ -94,8 +94,9 @@ const App: React.FC = () => {
 
   return (
     <div className="app">
-      {/* Sidebar */}
-      <aside className="sidebar">
+      <div className="app-wrapper">
+        {/* Sidebar */}
+        <aside className="sidebar">
         <div className="sidebar-content">
           <h1 className="name">yahya asmara</h1>
           <p className="title">computer science</p>
@@ -149,6 +150,7 @@ const App: React.FC = () => {
           </button>
         </div>
       </aside>
+      <div className="sidebar-spacer"></div>
 
       {/* Main Content */}
       <main className="main-content">
@@ -296,6 +298,7 @@ const App: React.FC = () => {
           <p>© 2026 Yahya Asmara</p>
         </footer>
       </main>
+      </div>
     </div>
   );
 };
