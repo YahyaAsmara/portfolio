@@ -1,8 +1,20 @@
-# portfolio
+# yahya asmara - portfolio
 
-This is my portfolio website.
+minimal portfolio site built with react + typescript.
 
-to do list:
-- bring linux terminal down with scroll
-- review better ways to optimize and lazy load with games
-- mobile asseassesscibility 
+## changelog
+
+- cleaned up old jsx files, migrated to typescript
+- added dark/light mode toggle
+- centered layout inspired by aidaniil.com
+- inter font for cleaner typography
+- rolling gallery with cats
+- minimal skills display (no boxes)
+
+## run locally
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
