@@ -167,7 +167,7 @@ const App: React.FC = () => {
             and the intersection of software and hardware. Outside of coding, I love hiking, photography, and badminton.
           </p>
           <p>
-            Currently in CPSC 526 and 411 for the Winter semester, I am expanding my knowledge in computer networks security and compiler construction.
+            Currently enrolled in CPSC 526 and 411 for the Winter semester, I am expanding my knowledge in computer network systems security and compiler construction.
           </p>
 
           <div className="gallery-container">
