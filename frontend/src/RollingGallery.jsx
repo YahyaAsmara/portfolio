@@ -30,19 +30,23 @@ export default function RollingGallery({ autoplay = false, pauseOnHover = true, 
       return n;
     });
   }, [imgs]);
-  const [isSm, setIsSm] = useState(typeof window !== 'undefined' ? window.innerWidth <= 640 : false);
+  const [isSm, setIsSm] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+  const [isXs, setIsXs] = useState(typeof window !== 'undefined' ? window.innerWidth <= 480 : false);
   const rotation = useMotionValue(0);
   const controls = useAnimation();
   const autoRef = useRef(null);
 
-  const cylinderWidth = isSm ? 720 : 1400;
+  const cylinderWidth = isXs ? 360 : isSm ? 480 : 1400;
   const faceCount = imgs.length;
-  const faceWidth = (cylinderWidth / faceCount) * (isSm ? 1.75 : 1.6);
+  const faceWidth = (cylinderWidth / faceCount) * (isXs ? 2.8 : isSm ? 2.5 : 1.6);
   const dragFactor = isSm ? 0.035 : 0.05; // slightly less sensitive on mobile
-  const radius = (cylinderWidth / (2 * Math.PI)) * (isSm ? 0.72 : 0.8);
+  const radius = (cylinderWidth / (2 * Math.PI)) * (isXs ? 0.9 : isSm ? 0.85 : 0.8);
 
   useEffect(() => {
-    const onResize = () => setIsSm(window.innerWidth <= 640);
+    const onResize = () => {
+      setIsSm(window.innerWidth <= 768);
+      setIsXs(window.innerWidth <= 480);
+    };
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);

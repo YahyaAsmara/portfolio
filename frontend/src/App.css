@@ -491,9 +491,32 @@
   border-bottom-color: var(--text-primary);
 }
 
-/* Responsive Design */
+/* Responsive Design - Tablet */
+@media (max-width: 900px) {
+  .main-content {
+    margin-left: 40px;
+    padding: 2.5rem 1.5rem;
+  }
+
+  .sidebar {
+    width: 200px;
+    min-width: 200px;
+    padding: 2.5rem 1.5rem;
+  }
+
+  .sidebar-spacer {
+    width: 200px;
+    min-width: 200px;
+  }
+}
+
+/* Responsive Design - Mobile */
 @media (max-width: 768px) {
   .app {
+    flex-direction: column;
+  }
+
+  .app-wrapper {
     flex-direction: column;
   }
 
@@ -502,17 +525,78 @@
     min-width: 100%;
     position: relative;
     height: auto;
-    padding: 2rem;
+    padding: 1.5rem;
     border-right: none;
     border-bottom: 1px solid var(--border-color);
   }
 
+  .sidebar-spacer {
+    display: none;
+  }
+
+  .sidebar-content {
+    gap: 1.25rem;
+  }
+
+  .name {
+    font-size: 1.35rem;
+    padding-right: 60px; /* Space for theme toggle */
+  }
+
+  .title,
+  .location {
+    font-size: 0.9rem;
+  }
+
+  .nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .nav a {
+    font-size: 0.9rem;
+    padding: 0.4rem 0;
+    /* Larger touch targets */
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .social-links {
+    flex-direction: row;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .social-links a {
+    font-size: 0.85rem;
+    /* Larger touch targets */
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
   .main-content {
-    padding: 2rem;
+    padding: 1.5rem;
+    margin-left: 0;
+    max-width: 100%;
+  }
+
+  .section {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
   }
 
   .section h2 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .section p {
+    font-size: 0.9rem;
+    line-height: 1.75;
   }
 
   .experience-header,
@@ -523,11 +607,154 @@
     gap: 0.25rem;
   }
 
+  .experience-header h3,
+  .project-header h3 {
+    font-size: 1rem;
+  }
+
+  .experience-item {
+    margin-bottom: 2rem;
+  }
+
+  .experience-item li {
+    font-size: 0.9rem;
+  }
+
   .theme-toggle {
     position: absolute;
-    top: 2rem;
-    right: 2rem;
+    top: 1.5rem;
+    right: 1.5rem;
     margin-top: 0;
+    /* Larger touch target */
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Skills responsive */
+  .skills-section {
+    margin-top: 2rem;
+  }
+
+  .skills-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .skill-line {
+    gap: 0.25rem;
+  }
+
+  .skill-label {
+    font-size: 0.65rem;
+  }
+
+  .skill-list {
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  /* Gallery responsive */
+  .gallery-container {
+    height: 200px;
+    margin: 1.5rem 0;
+  }
+
+  /* Projects responsive */
+  .project-card {
+    padding-bottom: 1.5rem;
+  }
+
+  .project-description {
+    font-size: 0.9rem;
+  }
+
+  .project-tech {
+    gap: 0.4rem;
+  }
+
+  .tech-tag {
+    font-size: 0.75rem;
+  }
+
+  /* Education responsive */
+  .education {
+    margin-top: 2rem;
+  }
+
+  .education h3 {
+    font-size: 1.1rem;
+  }
+
+  .education-header h4 {
+    font-size: 0.95rem;
+  }
+
+  .education-item p {
+    font-size: 0.85rem;
+  }
+
+  .courses {
+    font-size: 0.8rem !important;
+  }
+
+  /* Footer responsive */
+  .footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .sidebar {
+    padding: 1.25rem;
+  }
+
+  .name {
+    font-size: 1.2rem;
+  }
+
+  .nav {
+    gap: 0.15rem 0.75rem;
+  }
+
+  .nav a {
+    font-size: 0.85rem;
+  }
+
+  .main-content {
+    padding: 1.25rem;
+  }
+
+  .section h2 {
+    font-size: 1.25rem;
+  }
+
+  .section p {
+    font-size: 0.85rem;
+  }
+
+  .gallery-container {
+    height: 160px;
+    margin: 1rem 0;
+  }
+
+  .skill-list {
+    font-size: 0.8rem;
+  }
+
+  .experience-header h3,
+  .project-header h3 {
+    font-size: 0.95rem;
+  }
+
+  .theme-toggle {
+    top: 1.25rem;
+    right: 1.25rem;
+    font-size: 0.85rem;
   }
 }
 
