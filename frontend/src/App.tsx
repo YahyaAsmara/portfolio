@@ -215,13 +215,13 @@ const App: React.FC = () => {
 
           <div className="experience-item">
             <div className="experience-header">
-              <h3>Academic Tutor</h3>
+              <h3>Software Developer and Tutor</h3>
               <span className="date">May 2024 - Present</span>
             </div>
             <p className="company">EducationWise Inc. • Calgary, AB</p>
             <ul>
               <li>delivering specialized cs instruction with evidence-based pedagogy across multiple languages</li>
-              <li>designing study frameworks that measurably lift test scores and long-term academic performance</li>
+              <li>designing ai workflows using internal tools that measurably lift test scores and long-term academic performance</li>
             </ul>
           </div>
 
