@@ -50,6 +50,13 @@ const App: React.FC = () => {
       year: '2025',
     },
     {
+      title: 'Gen Z to Human Translator',
+      description: 'End-to-end Gen Z slang translator with a React/Tailwind UI, Spring Boot API, and Dockerized PostgreSQL. Supports JWT-authenticated personas plus live "vibes" and "remix" sharing.',
+      tech: ['React', 'Tailwind', 'Spring Boot', 'PostgreSQL', 'Docker', 'JWT'],
+      link: 'https://github.com/YahyaAsmara/genz-translator',
+      year: '2025',
+    },
+    {
       title: 'Invasion of the Blobs',
       description: 'Low-level C drivers for SPI communication on Raspberry Pi, interfacing with MCP3008 ADC and MCP23S08 GPIO expander. Engineered bidirectional communication pipeline with UART serial transmission and Python parsing.',
       tech: ['C', 'Python', 'PySerial', 'UART', 'SPI', 'Raspberry Pi'],
