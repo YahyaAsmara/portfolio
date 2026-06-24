@@ -36,7 +36,7 @@ export default function RollingGallery({ autoplay = false, pauseOnHover = true, 
   const controls = useAnimation();
   const autoRef = useRef(null);
 
-  const cylinderWidth = isXs ? 360 : isSm ? 480 : 1400;
+  const cylinderWidth = isXs ? 560 : isSm ? 700 : 1400;
   const faceCount = imgs.length;
   const faceWidth = (cylinderWidth / faceCount) * (isXs ? 2.8 : isSm ? 2.5 : 1.6);
   const dragFactor = isSm ? 0.035 : 0.05; // slightly less sensitive on mobile
