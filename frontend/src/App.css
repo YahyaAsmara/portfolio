@@ -67,10 +67,11 @@
 }
 
 .location {
-  font-size: 0.85rem;
+  /* keep the full origins string on a single line; shrink on narrow screens */
+  font-size: clamp(0.58rem, 1.4vw, 0.85rem);
   color: var(--text-muted);
   margin-top: 0.15rem;
-  max-width: 34ch;
+  white-space: nowrap;
   line-height: 1.5;
 }
 
