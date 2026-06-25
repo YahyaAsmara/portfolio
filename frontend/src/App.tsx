@@ -77,12 +77,12 @@ const App: React.FC = () => {
       <main className="layout">
         <div className="col-left">
           <header className="intro">
-            <h1 className="name">yahya asmara</h1>
-            <p className="title">studying computer science</p>
-            <p className="location">based in calgary, canada · from kagoshima, japan / depok, indonesia</p>
-            <p className="about">"an agent is a wish that learned to act."</p>
+            <h1 className="name" style={{ textAlign: 'center' }}>yahya asmara</h1>
+            <p className="title" style={{ textAlign: 'center' }}>studying computer science at the university of calgary</p>
+            <p className="location" style={{ textAlign: 'center' }}>based in <b>calgary, canada</b> · from <b>kagoshima, japan</b> / <b>depok, indonesia</b></p>
+            <p className="about" style={{ textAlign: 'center' }} >the soul becomes dyed with the colour of its thoughts.</p>
 
-            <div className="contact">
+            <div className="contact" style={{ justifyContent: 'center' }}>
               <a
                 href="https://github.com/YahyaAsmara"
                 target="_blank"
