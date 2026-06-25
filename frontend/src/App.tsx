@@ -78,8 +78,9 @@ const App: React.FC = () => {
         <div className="col-left">
           <header className="intro">
             <h1 className="name">yahya asmara</h1>
-            <p className="title">computer science · calgary, canada</p>
-            <p className="about">i love agentic coding.</p>
+            <p className="title">studying computer science</p>
+            <p className="location">based in calgary, canada · from kagoshima, japan / depok, indonesia</p>
+            <p className="about">"an agent is a wish that learned to act."</p>
 
             <div className="contact">
               <a

@@ -66,6 +66,14 @@
   color: var(--text-muted);
 }
 
+.location {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+  max-width: 34ch;
+  line-height: 1.5;
+}
+
 .about {
   font-size: 0.95rem;
   color: var(--text-secondary);
