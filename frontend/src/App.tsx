@@ -32,14 +32,6 @@ const experience: Experience[] = [
     tag: 'Full-time',
   },
   {
-    title: 'Software Developer Intern',
-    company: 'Canadian Sheep Federation',
-    date: 'Jun 2026 — Present',
-    Logo: CsfLogo,
-    link: 'https://www.cansheep.ca/',
-    tag: 'Part-time',
-  },
-  {
     title: 'Software Developer',
     company: 'Code the Change YYC',
     date: 'Oct 2025 — Present',
@@ -53,6 +45,14 @@ const experience: Experience[] = [
     date: 'May 2024 — Present',
     Logo: EducationWiseLogo,
     link: 'https://www.educationwisetutors.ca/',
+    tag: 'Part-time',
+  },
+  {
+    title: 'Software Engineer Intern',
+    company: 'Canadian Sheep Federation',
+    date: 'Jun 2026 — July 2026',
+    Logo: CsfLogo,
+    link: 'https://www.cansheep.ca/',
     tag: 'Part-time',
   },
   {
@@ -80,7 +80,7 @@ const App: React.FC = () => {
             <h1 className="name" style={{ textAlign: 'center' }}>yahya asmara</h1>
             <p className="title" style={{ textAlign: 'center' }}>studying computer science at the university of calgary</p>
             <p className="location" style={{ textAlign: 'center' }}>based in <b>calgary, canada</b> · from <b>kagoshima, japan</b> / <b>depok, indonesia</b></p>
-            <p className="about" style={{ textAlign: 'center' }} >the soul becomes dyed with the colour of its thoughts.</p>
+            <p className="about" style={{ textAlign: 'center' }} >cats</p>
 
             <div className="contact" style={{ justifyContent: 'center' }}>
               <a
