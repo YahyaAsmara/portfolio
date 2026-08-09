@@ -10,6 +10,7 @@ minimal portfolio site built with react + typescript.
 - inter font for cleaner typography
 - rolling gallery with cats
 - minimal skills display (no boxes)
+- updated roles and intro
 
 ## run locally
 
