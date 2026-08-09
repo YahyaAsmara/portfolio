@@ -66,12 +66,21 @@
   color: var(--text-muted);
 }
 
+.location {
+  /* keep the full origins string on a single line; shrink on narrow screens */
+  font-size: clamp(0.58rem, 1.4vw, 0.85rem);
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
 .about {
   font-size: 0.95rem;
   color: var(--text-secondary);
   line-height: 1.5;
   margin-top: 0.35rem;
-  max-width: 30ch;
+  max-width: 50ch;
 }
 
 /* Contact icons */
