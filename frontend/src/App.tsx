@@ -53,7 +53,6 @@ const experience: Experience[] = [
     date: 'Jun 2026 — July 2026',
     Logo: CsfLogo,
     link: 'https://www.cansheep.ca/',
-    tag: 'Part-time',
   },
   {
     title: 'Product Development',
@@ -80,7 +79,7 @@ const App: React.FC = () => {
             <h1 className="name" style={{ textAlign: 'center' }}>yahya asmara</h1>
             <p className="title" style={{ textAlign: 'center' }}>studying computer science at the university of calgary</p>
             <p className="location" style={{ textAlign: 'center' }}>based in <b>calgary, canada</b> · from <b>kagoshima, japan</b> / <b>depok, indonesia</b></p>
-            <p className="about" style={{ textAlign: 'center' }} >cats</p>
+            <p className="about" style={{ textAlign: 'center' }} >cats and compilers</p>
 
             <div className="contact" style={{ justifyContent: 'center' }}>
               <a
